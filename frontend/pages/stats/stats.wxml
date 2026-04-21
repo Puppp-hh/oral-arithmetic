@@ -1,0 +1,224 @@
+<!-- 统计页视图 -->
+<view class="page">
+
+  <!-- ── 总览卡片 ── -->
+  <view wx:if="{{summary}}" class="summary-header">
+    <view class="summary-top">
+      <view class="summary-level">
+        <text class="lv-num">Lv.{{summary.current_level}}</text>
+        <text class="lv-title">{{summary.levelTitle}}</text>
+      </view>
+      <view class="summary-meta">
+        <text class="meta-item">累计 {{summary.total_problems}} 题</text>
+        <text class="meta-item">正确率 {{summary.cumulative_correct_rate}}%</text>
+      </view>
+    </view>
+
+    <!-- 升级进度 -->
+    <view class="upgrade-bar">
+      <view class="upgrade-info">
+        <text>升级进度</text>
+        <text class="upgrade-rate {{summary.is_promotion_qualified ? 'rate-ready' : ''}}">
+          {{summary.recent_20_correct_rate}}% / 85%
+        </text>
+      </view>
+      <view class="progress-bar">
+        <view
+          class="progress-fill {{summary.recent_20_correct_rate >= 85 ? 'fill-gold' : 'fill-blue'}}"
+          style="width: {{summary.recent_20_correct_rate > 100 ? 100 : summary.recent_20_correct_rate}}%"
+        ></view>
+      </view>
+      <text wx:if="{{summary.is_promotion_qualified}}" class="qualify-tip">🎉 已满足升级条件！</text>
+    </view>
+
+    <!-- 今日数据 -->
+    <view class="today-row">
+      <view class="today-item">
+        <text class="today-num">{{summary.today_problems}}</text>
+        <text class="today-label">今日题数</text>
+      </view>
+      <view class="today-item">
+        <text class="today-num {{summary.today_correct_rate >= 85 ? 'num-green' : summary.today_correct_rate < 60 ? 'num-red' : 'num-blue'}}">
+          {{summary.today_correct_rate}}%
+        </text>
+        <text class="today-label">今日正确率</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── Tab 切换 ── -->
+  <view class="tab-bar">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="value"
+      class="tab-item {{activeTab === item.value ? 'active' : ''}}"
+      bindtap="switchTab"
+      data-tab="{{item.value}}"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- ── 最近20题 ── -->
+  <block wx:if="{{activeTab === 'recent' && recent20}}">
+    <view class="stat-summary">
+      <view class="ss-item">
+        <text class="ss-num">{{recent20.total}}</text>
+        <text class="ss-label">总题数</text>
+      </view>
+      <view class="ss-item">
+        <text class="ss-num green">{{recent20.correct}}</text>
+        <text class="ss-label">答对</text>
+      </view>
+      <view class="ss-item">
+        <text class="ss-num red">{{recent20.wrong}}</text>
+        <text class="ss-label">答错</text>
+      </view>
+      <view class="ss-item">
+        <text class="ss-num blue">{{recent20.correct_rate}}%</text>
+        <text class="ss-label">正确率</text>
+      </view>
+    </view>
+
+    <view class="recent-list">
+      <view
+        wx:for="{{recent20.records}}"
+        wx:key="index"
+        class="recent-item {{item.is_correct ? 'item-correct' : 'item-wrong'}}"
+      >
+        <view class="recent-left">
+          <text class="recent-idx">{{index + 1}}</text>
+          <view>
+            <text class="recent-content">{{item.problem_content}}</text>
+            <text class="recent-type">{{item.problem_type}}</text>
+          </view>
+        </view>
+        <view class="recent-right">
+          <text class="{{item.is_correct ? 'tag-correct' : 'tag-wrong'}}">
+            {{item.is_correct ? '✓' : '✗'}}
+          </text>
+          <text wx:if="{{!item.is_correct}}" class="std-ans">={{item.standard_answer}}</text>
+          <text class="recent-time">{{item.answer_time_seconds}}s</text>
+        </view>
+      </view>
+      <view wx:if="{{recent20.total === 0}}" class="empty-tip">
+        <text>暂无答题记录</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ── 每日统计 ── -->
+  <block wx:if="{{activeTab === 'daily'}}">
+    <view wx:if="{{dailyStats.length > 0}}" class="daily-chart">
+      <view class="chart-title">近7天答题情况</view>
+      <view class="bars-wrap">
+        <view
+          wx:for="{{dailyStats}}"
+          wx:key="statistic_date"
+          class="bar-col"
+        >
+          <text class="bar-val">{{item.daily_problems}}</text>
+          <view class="bar-bg">
+            <view class="bar-fill" style="height:{{item.barPct}}%"></view>
+          </view>
+          <text class="bar-label">{{item.statistic_date}}</text>
+          <text class="bar-rate">{{item.daily_correct_rate}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="daily-list">
+      <view
+        wx:for="{{dailyStats}}"
+        wx:key="statistic_date"
+        class="daily-item"
+      >
+        <view class="daily-date">{{item.statistic_date}}</view>
+        <view class="daily-nums">
+          <text>{{item.daily_problems}}题</text>
+          <text class="sep">|</text>
+          <text class="green">对{{item.daily_correct}}</text>
+          <text class="sep">|</text>
+          <text class="red">错{{item.daily_wrong}}</text>
+          <text class="sep">|</text>
+          <text class="blue">{{item.daily_correct_rate}}%</text>
+        </view>
+      </view>
+      <view wx:if="{{dailyStats.length === 0}}" class="empty-tip">
+        <text>暂无每日统计数据</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ── 类型分析 ── -->
+  <block wx:if="{{activeTab === 'type' && dailyStats.length > 0}}">
+    <view class="type-analysis">
+      <view class="type-item">
+        <view class="type-left">
+          <text class="type-icon">➕</text>
+          <text class="type-name">加法</text>
+        </view>
+        <view class="type-bar-wrap">
+          <view class="type-bar">
+            <view class="type-fill fill-add" style="width:{{dailyStats[0].addition_correct_rate || 0}}%"></view>
+          </view>
+          <text class="type-rate">{{dailyStats[0].addition_correct_rate || 0}}%</text>
+        </view>
+      </view>
+      <view class="type-item">
+        <view class="type-left">
+          <text class="type-icon">➖</text>
+          <text class="type-name">减法</text>
+        </view>
+        <view class="type-bar-wrap">
+          <view class="type-bar">
+            <view class="type-fill fill-sub" style="width:{{dailyStats[0].subtraction_correct_rate || 0}}%"></view>
+          </view>
+          <text class="type-rate">{{dailyStats[0].subtraction_correct_rate || 0}}%</text>
+        </view>
+      </view>
+      <view class="type-item">
+        <view class="type-left">
+          <text class="type-icon">✖️</text>
+          <text class="type-name">乘法</text>
+        </view>
+        <view class="type-bar-wrap">
+          <view class="type-bar">
+            <view class="type-fill fill-mul" style="width:{{dailyStats[0].multiplication_correct_rate || 0}}%"></view>
+          </view>
+          <text class="type-rate">{{dailyStats[0].multiplication_correct_rate || 0}}%</text>
+        </view>
+      </view>
+      <view class="type-item">
+        <view class="type-left">
+          <text class="type-icon">➗</text>
+          <text class="type-name">除法</text>
+        </view>
+        <view class="type-bar-wrap">
+          <view class="type-bar">
+            <view class="type-fill fill-div" style="width:{{dailyStats[0].division_correct_rate || 0}}%"></view>
+          </view>
+          <text class="type-rate">{{dailyStats[0].division_correct_rate || 0}}%</text>
+        </view>
+      </view>
+      <view class="type-item">
+        <view class="type-left">
+          <text class="type-icon">🔀</text>
+          <text class="type-name">混合</text>
+        </view>
+        <view class="type-bar-wrap">
+          <view class="type-bar">
+            <view class="type-fill fill-mix" style="width:{{dailyStats[0].mixed_operation_correct_rate || 0}}%"></view>
+          </view>
+          <text class="type-rate">{{dailyStats[0].mixed_operation_correct_rate || 0}}%</text>
+        </view>
+      </view>
+    </view>
+    <view class="type-tip">数据来源：最近一天的训练记录</view>
+  </block>
+
+  <view wx:if="{{activeTab === 'type' && dailyStats.length === 0}}" class="empty-tip">
+    <text>先完成至少一天的训练，类型分析才会显示</text>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="empty-tip"><text>加载中...</text></view>
+</view>

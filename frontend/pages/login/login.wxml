@@ -1,0 +1,65 @@
+<!-- 登录页视图 -->
+<view class="container">
+  <!-- 顶部 Logo 区 -->
+  <view class="header">
+    <view class="logo-wrap">
+      <text class="logo-icon">🧮</text>
+    </view>
+    <text class="title">口算分级训练</text>
+    <text class="subtitle">小学数学 · 轻松学习</text>
+  </view>
+
+  <!-- 角色选择 -->
+  <view class="role-tabs">
+    <view
+      class="role-tab {{role === 'student' ? 'active' : ''}}"
+      bindtap="switchRole"
+      data-role="student"
+    >学生</view>
+    <view
+      class="role-tab {{role === 'teacher' ? 'active' : ''}}"
+      bindtap="switchRole"
+      data-role="teacher"
+    >教师</view>
+  </view>
+
+  <!-- 表单 -->
+  <view class="form-card">
+    <view class="input-group">
+      <text class="input-label">账号</text>
+      <input
+        class="input-field"
+        placeholder="请输入账号"
+        value="{{account}}"
+        bindinput="onAccountInput"
+        maxlength="50"
+      />
+    </view>
+    <view class="divider"></view>
+    <view class="input-group">
+      <text class="input-label">密码</text>
+      <input
+        class="input-field"
+        placeholder="请输入密码"
+        password
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        maxlength="50"
+      />
+    </view>
+  </view>
+
+  <!-- 登录按钮 -->
+  <button
+    class="btn-login {{loading ? 'loading' : ''}}"
+    bindtap="onLogin"
+    disabled="{{loading}}"
+  >
+    {{loading ? '登录中...' : (role === 'student' ? '学生登录' : '教师登录')}}
+  </button>
+
+  <!-- 提示 -->
+  <view class="tips">
+    <text>测试账号：student01 / 123456</text>
+  </view>
+</view>

@@ -1,0 +1,150 @@
+<!-- 训练页视图 -->
+<view class="page">
+
+  <!-- ══ 配置阶段 ══════════════════════════════════════════ -->
+  <block wx:if="{{phase === 'config'}}">
+    <view class="config-header">
+      <text class="config-title">配置训练</text>
+      <text class="config-sub">选择难度和题型开始口算练习</text>
+    </view>
+
+    <view class="card">
+      <!-- 难度选择 -->
+      <view class="config-row">
+        <text class="config-label">难度等级</text>
+        <slider
+          class="level-slider"
+          min="1" max="10" step="1"
+          value="{{level}}"
+          show-value
+          active-color="#4A90E2"
+          bindchange="onLevelChange"
+        />
+      </view>
+      <view class="level-hint">
+        <text>Lv.{{level}}</text>
+        <text class="level-desc">
+          {{level <= 2 ? '10以内加减法' : level <= 4 ? '两位数加减法' : level <= 6 ? '乘法口诀' : level <= 8 ? '除法' : '混合运算'}}
+        </text>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 运算类型 -->
+      <view class="config-row">
+        <text class="config-label">运算类型</text>
+        <picker
+          range="{{opTypes}}"
+          range-key="label"
+          value="{{opTypeIndex}}"
+          bindchange="onOpTypeChange"
+        >
+          <view class="picker-val">{{opTypes[opTypeIndex].label}} ›</view>
+        </picker>
+      </view>
+
+      <view class="divider"></view>
+
+      <!-- 题目数量 -->
+      <view class="config-row">
+        <text class="config-label">题目数量</text>
+        <picker
+          range="{{countOptions}}"
+          value="{{countIndex}}"
+          bindchange="onCountChange"
+        >
+          <view class="picker-val">{{countOptions[countIndex]}} 题 ›</view>
+        </picker>
+      </view>
+    </view>
+
+    <button class="btn-start" bindtap="onStart">🚀 开始训练</button>
+  </block>
+
+
+  <!-- ══ 训练阶段 ══════════════════════════════════════════ -->
+  <block wx:if="{{phase === 'training'}}">
+
+    <!-- 进度条 -->
+    <view class="train-progress">
+      <view class="progress-text">
+        <text>第 {{currentIndex + 1}} 题 / 共 {{problems.length}} 题</text>
+        <text class="timer-text">⏱ {{timer}}s</text>
+      </view>
+      <progress
+        percent="{{(currentIndex) / problems.length * 100}}"
+        active stroke-width="6"
+        activeColor="#4A90E2"
+        backgroundColor="#E8E8E8"
+      />
+    </view>
+
+    <!-- 题目卡片 -->
+    <view class="problem-card">
+      <view class="problem-meta">
+        <text class="problem-type">{{currentProblem.problem_type === 'addition' ? '加法' : currentProblem.problem_type === 'subtraction' ? '减法' : currentProblem.problem_type === 'multiplication' ? '乘法' : currentProblem.problem_type === 'division' ? '除法' : '混合'}}</text>
+        <text class="problem-level">Lv.{{currentProblem.difficulty_level}}</text>
+      </view>
+      <text class="problem-content">{{currentProblem.problem_content}}</text>
+    </view>
+
+    <!-- 答题区（未提交） -->
+    <block wx:if="{{!showResult}}">
+      <view class="answer-card">
+        <text class="answer-label">你的答案</text>
+        <input
+          class="answer-input"
+          type="number"
+          placeholder="输入数字"
+          value="{{userAnswer}}"
+          bindinput="onAnswerInput"
+          focus="{{true}}"
+          confirm-type="done"
+          bindconfirm="onSubmit"
+          adjust-position="{{false}}"
+        />
+      </view>
+      <button
+        class="btn-submit {{submitLoading ? 'loading' : ''}}"
+        bindtap="onSubmit"
+        disabled="{{submitLoading}}"
+      >{{submitLoading ? '判题中...' : '提交答案'}}</button>
+    </block>
+
+    <!-- 结果区（已提交） -->
+    <block wx:if="{{showResult && lastResult}}">
+      <view class="result-card {{lastResult.is_correct ? 'result-correct' : 'result-wrong'}}">
+        <text class="result-icon">{{lastResult.is_correct ? '✅' : '❌'}}</text>
+        <text class="result-main">{{lastResult.is_correct ? '回答正确！' : '回答错误'}}</text>
+        <view wx:if="{{!lastResult.is_correct}}" class="result-answer">
+          <text>正确答案：</text>
+          <text class="answer-highlight">{{lastResult.standard_answer}}</text>
+        </view>
+        <view wx:if="{{lastResult.level_changed}}" class="level-up-badge">
+          🎉 恭喜升级到 Lv.{{lastResult.new_level}}！
+        </view>
+        <text class="result-rate">最近20题正确率：{{lastResult.recent_20_correct_rate}}%</text>
+      </view>
+
+      <button class="btn-next" bindtap="onNext">
+        {{currentIndex + 1 >= problems.length ? '查看本次汇总' : '下一题 →'}}
+      </button>
+    </block>
+
+  </block>
+
+
+  <!-- ══ 汇总阶段 ══════════════════════════════════════════ -->
+  <block wx:if="{{phase === 'summary'}}">
+    <view class="summary-card">
+      <text class="summary-icon">🎓</text>
+      <text class="summary-title">本次训练完成！</text>
+      <text class="summary-sub">共完成 {{summary.total}} 道题</text>
+      <text class="summary-tip">详细成绩已记录，可在统计页查看</text>
+    </view>
+
+    <button class="btn-primary-full" bindtap="onRestart">再来一次</button>
+    <button class="btn-ghost-full" bindtap="goStats">查看统计</button>
+  </block>
+
+</view>

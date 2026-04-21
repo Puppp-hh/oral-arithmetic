@@ -1,0 +1,218 @@
+/* 统计页样式 */
+.page { padding-bottom: 60rpx; }
+
+/* ── 总览头部 ── */
+.summary-header {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  padding: 40rpx 32rpx;
+}
+
+.summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.lv-num  { font-size: 56rpx; font-weight: 900; color: #fff; }
+.lv-title{ font-size: 28rpx; color: rgba(255,255,255,0.85); margin-left: 12rpx; }
+.summary-level { display: flex; align-items: baseline; }
+
+.summary-meta { text-align: right; }
+.meta-item { display: block; font-size: 26rpx; color: rgba(255,255,255,0.85); margin-bottom: 6rpx; }
+
+/* 升级进度 */
+.upgrade-bar { margin-bottom: 24rpx; }
+.upgrade-info { display: flex; justify-content: space-between; margin-bottom: 10rpx; font-size: 24rpx; color: rgba(255,255,255,0.8); }
+.upgrade-rate { font-weight: 700; }
+.rate-ready { color: #FFD700; }
+
+.progress-bar { height: 16rpx; background: rgba(255,255,255,0.25); border-radius: 8rpx; overflow: hidden; margin-bottom: 10rpx; }
+.progress-fill { height: 100%; border-radius: 8rpx; }
+.fill-blue { background: rgba(255,255,255,0.9); }
+.fill-gold { background: linear-gradient(90deg, #F5A623, #FFD700); }
+
+.qualify-tip { font-size: 24rpx; color: #FFD700; font-weight: 600; }
+
+/* 今日数据 */
+.today-row { display: flex; gap: 32rpx; }
+.today-item { flex: 1; text-align: center; background: rgba(255,255,255,0.15); border-radius: 12rpx; padding: 20rpx; }
+.today-num { display: block; font-size: 48rpx; font-weight: 800; color: #fff; }
+.today-label { font-size: 22rpx; color: rgba(255,255,255,0.75); margin-top: 4rpx; }
+.num-green { color: #A8E063 !important; }
+.num-red   { color: #FF8C8C !important; }
+.num-blue  { color: #fff; }
+
+/* ── Tab 切换 ── */
+.tab-bar {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid #F0F0F0;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #888;
+  border-bottom: 4rpx solid transparent;
+}
+
+.tab-item.active {
+  color: #4A90E2;
+  font-weight: 700;
+  border-bottom-color: #4A90E2;
+}
+
+/* ── 最近20题 ── */
+.stat-summary {
+  display: flex;
+  background: #fff;
+  padding: 24rpx 0;
+  margin-bottom: 12rpx;
+}
+
+.ss-item { flex: 1; text-align: center; }
+.ss-num  { display: block; font-size: 40rpx; font-weight: 800; color: #333; }
+.ss-label{ font-size: 22rpx; color: #aaa; margin-top: 4rpx; }
+.green { color: #52C41A !important; }
+.red   { color: #FF4D4F !important; }
+.blue  { color: #4A90E2 !important; }
+
+.recent-list { padding: 0 24rpx; }
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  border-radius: 12rpx;
+  margin-bottom: 12rpx;
+  border-left: 6rpx solid transparent;
+}
+
+.item-correct { background: #F6FFED; border-left-color: #52C41A; }
+.item-wrong   { background: #FFF2F0; border-left-color: #FF4D4F; }
+
+.recent-left { display: flex; align-items: center; flex: 1; gap: 16rpx; }
+.recent-idx  { font-size: 24rpx; color: #bbb; width: 40rpx; text-align: center; }
+.recent-content { display: block; font-size: 30rpx; font-weight: 600; color: #333; }
+.recent-type { font-size: 22rpx; color: #aaa; }
+
+.recent-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4rpx; }
+.std-ans { font-size: 22rpx; color: #52C41A; font-weight: 600; }
+.recent-time { font-size: 22rpx; color: #bbb; }
+
+.tag-correct { font-size: 32rpx; color: #52C41A; font-weight: 700; }
+.tag-wrong   { font-size: 32rpx; color: #FF4D4F; font-weight: 700; }
+
+/* ── 每日统计 ── */
+.daily-chart {
+  background: #fff;
+  padding: 32rpx;
+  margin-bottom: 12rpx;
+}
+
+.chart-title { font-size: 28rpx; font-weight: 600; color: #333; margin-bottom: 24rpx; }
+
+.bars-wrap {
+  display: flex;
+  align-items: flex-end;
+  height: 200rpx;
+  gap: 12rpx;
+}
+
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.bar-val { font-size: 20rpx; color: #4A90E2; margin-bottom: 6rpx; }
+
+.bar-bg {
+  flex: 1;
+  width: 100%;
+  background: #F0F4FF;
+  border-radius: 6rpx 6rpx 0 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #4A90E2, #6EC6FF);
+  border-radius: 6rpx 6rpx 0 0;
+  transition: height 0.5s;
+}
+
+.bar-label { font-size: 18rpx; color: #aaa; margin-top: 6rpx; }
+.bar-rate  { font-size: 18rpx; color: #52C41A; }
+
+.daily-list { padding: 0 24rpx; }
+
+.daily-item {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.daily-date { font-size: 26rpx; font-weight: 600; color: #333; margin-bottom: 10rpx; }
+.daily-nums { font-size: 24rpx; color: #666; display: flex; gap: 16rpx; align-items: center; }
+.sep { color: #ddd; }
+
+/* ── 类型分析 ── */
+.type-analysis { padding: 24rpx; }
+
+.type-item {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.type-left { width: 120rpx; display: flex; align-items: center; gap: 12rpx; }
+.type-icon { font-size: 36rpx; }
+.type-name { font-size: 28rpx; color: #333; }
+
+.type-bar-wrap { flex: 1; display: flex; align-items: center; gap: 16rpx; }
+
+.type-bar {
+  flex: 1;
+  height: 20rpx;
+  background: #F0F0F0;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.type-fill {
+  height: 100%;
+  border-radius: 10rpx;
+  transition: width 0.5s;
+}
+
+.fill-add { background: #4A90E2; }
+.fill-sub { background: #52C41A; }
+.fill-mul { background: #F5A623; }
+.fill-div { background: #EB2F96; }
+.fill-mix { background: #722ED1; }
+
+.type-rate { font-size: 26rpx; font-weight: 700; color: #333; width: 80rpx; text-align: right; }
+
+.type-tip { text-align: center; font-size: 22rpx; color: #bbb; padding: 8rpx; }
+
+/* ── 空状态 ── */
+.empty-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80rpx 40rpx;
+  color: #bbb;
+  font-size: 28rpx;
+  text-align: center;
+}

@@ -1,0 +1,63 @@
+/* ── 全局样式 ──────────────────────────────────────────────── */
+page {
+  background-color: #F5F7FA;
+  font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 28rpx;
+  color: #333;
+  box-sizing: border-box;
+}
+
+/* ── 通用卡片 ────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin: 20rpx 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(0,0,0,0.06);
+}
+
+/* ── 主按钮 ──────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #4A90E2, #357ABD);
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  padding: 24rpx 0;
+  text-align: center;
+  border: none;
+  width: 100%;
+}
+
+.btn-primary:active { opacity: 0.85; }
+
+/* ── 次按钮 ──────────────────────────────────────────────── */
+.btn-ghost {
+  background: transparent;
+  color: #4A90E2;
+  border: 2rpx solid #4A90E2;
+  border-radius: 48rpx;
+  font-size: 28rpx;
+  padding: 18rpx 0;
+  text-align: center;
+  width: 100%;
+}
+
+/* ── 成功/错误标签 ───────────────────────────────────────── */
+.tag-correct  { color: #52C41A; background: #F6FFED; border: 1rpx solid #B7EB8F; border-radius: 8rpx; padding: 4rpx 12rpx; font-size: 24rpx; }
+.tag-wrong    { color: #FF4D4F; background: #FFF2F0; border: 1rpx solid #FFCCC7; border-radius: 8rpx; padding: 4rpx 12rpx; font-size: 24rpx; }
+
+/* ── 空状态 ──────────────────────────────────────────────── */
+.empty-tip {
+  text-align: center;
+  color: #bbb;
+  padding: 80rpx 0;
+  font-size: 28rpx;
+}
+
+/* ── 分割线 ──────────────────────────────────────────────── */
+.divider {
+  height: 1rpx;
+  background: #F0F0F0;
+  margin: 20rpx 0;
+}
