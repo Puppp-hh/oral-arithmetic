@@ -1,0 +1,92 @@
+### ============================================================
+### 认证系统接口测试
+### 工具：VS Code REST Client 插件 / JetBrains HTTP Client
+### 前置：执行 schema.sql + seed.sql + npm run seed
+### ============================================================
+
+@BASE_URL = http://localhost:3000
+@STUDENT_ACCOUNT = student01
+@TEACHER_ACCOUNT = teacher01
+@PASSWORD = 123456
+
+# test
+GET {{BASE_URL}}/api/health
+
+### ── 1. 学生登录 ─────────────────────────────────────────────
+# 期望：返回 token + studentPublic 用户信息
+# Redis 写入：token:1_student  EX 7200
+POST {{BASE_URL}}/api/auth/student/login
+Content-Type: application/json
+
+{
+  "account": "{{STUDENT_ACCOUNT}}",
+  "password": "{{PASSWORD}}"
+}
+
+### ── 2. 教师登录 ─────────────────────────────────────────────
+POST {{BASE_URL}}/api/auth/teacher/login
+Content-Type: application/json
+
+{
+  "account": "{{TEACHER_ACCOUNT}}",
+  "password": "{{PASSWORD}}"
+}
+
+### ── 3. 学生注册（新账号）────────────────────────────────────
+# class_id=1（一年级一班）, grade_id=1（一年级）
+POST {{BASE_URL}}/api/auth/student/register
+Content-Type: application/json
+
+{
+  "account": "newstudent01",
+  "password": "abc123",
+  "name": "新同学",
+  "class_id": 1,
+  "grade_id": 1,
+  "gender": "male"
+}
+
+### ── 4. 注册 - 账号重复（期望 400）──────────────────────────
+POST {{BASE_URL}}/api/auth/student/register
+Content-Type: application/json
+
+{
+  "account": "student01",
+  "password": "123456",
+  "name": "重复账号",
+  "class_id": 1,
+  "grade_id": 1
+}
+
+### ── 5. 登录 - 密码错误（期望 401）─────────────────────────
+POST {{BASE_URL}}/api/auth/student/login
+Content-Type: application/json
+
+{
+  "account": "student01",
+  "password": "wrongpass"
+}
+
+### ── 6. 查询 token 信息（需替换 TOKEN）─────────────────────
+# 将上方登录响应中的 token 填入下面的 @TOKEN
+@STUDENT_TOKEN = 替换为登录响应的token
+
+GET {{BASE_URL}}/api/auth/token-info
+Authorization: Bearer {{STUDENT_TOKEN}}
+
+### ── 7. 刷新 token ──────────────────────────────────────────
+# 使用旧 token 换新 token，旧 token 立即失效
+POST {{BASE_URL}}/api/auth/refresh
+Authorization: Bearer {{STUDENT_TOKEN}}
+
+### ── 8. 登出 ───────────────────────────────────────────────
+# Redis 中删除 token，之后该 token 失效
+POST {{BASE_URL}}/api/auth/logout
+Authorization: Bearer {{STUDENT_TOKEN}}
+
+### ── 9. 登出后再请求（期望 401）────────────────────────────
+GET {{BASE_URL}}/api/auth/token-info
+Authorization: Bearer {{STUDENT_TOKEN}}
+
+### ── 10. 无 token 访问受保护接口（期望 401）───────────────
+GET {{BASE_URL}}/api/problems/generate

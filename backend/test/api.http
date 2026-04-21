@@ -1,0 +1,114 @@
+### ============================================================
+### 全接口测试文件（出题 / 判题 / 错题 / 统计）
+### 使用方法：先执行 auth.http 中的登录，取得 TOKEN 填入下方
+### ============================================================
+
+@BASE_URL = http://localhost:3000
+@TOKEN = 替换为学生登录后的token
+
+### ═══════════════════════════════════════════════════════════
+###  出题接口
+### ═══════════════════════════════════════════════════════════
+
+### ── 出题：按难度等级（level 1）────────────────────────────
+GET {{BASE_URL}}/api/problems/generate?difficulty_level=1&count=5
+Authorization: Bearer {{TOKEN}}
+
+### ── 出题：按难度 + 类型（加法）────────────────────────────
+GET {{BASE_URL}}/api/problems/generate?difficulty_level=3&operation_type=addition&count=5
+Authorization: Bearer {{TOKEN}}
+
+### ── 出题：默认参数（level=1，count=10）───────────────────
+GET {{BASE_URL}}/api/problems/generate
+Authorization: Bearer {{TOKEN}}
+
+### ═══════════════════════════════════════════════════════════
+###  判题接口（提交答案）
+### ═══════════════════════════════════════════════════════════
+
+### ── 提交正确答案（problem_id 根据出题结果填写）──────────
+POST {{BASE_URL}}/api/problems/submit
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "problem_id": 1,
+  "answer_content": "2",
+  "answer_time_seconds": 3,
+  "session_id": "test-session-001"
+}
+
+### ── 提交错误答案（答案故意填错）───────────────────────────
+POST {{BASE_URL}}/api/problems/submit
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "problem_id": 2,
+  "answer_content": "99",
+  "answer_time_seconds": 5,
+  "session_id": "test-session-001"
+}
+
+### ── 提交复习题目（is_review=true）─────────────────────────
+POST {{BASE_URL}}/api/problems/submit
+Authorization: Bearer {{TOKEN}}
+Content-Type: application/json
+
+{
+  "problem_id": 2,
+  "answer_content": "5",
+  "answer_time_seconds": 4,
+  "session_id": "review-session-001",
+  "is_review": true
+}
+
+### ═══════════════════════════════════════════════════════════
+###  错题本接口
+### ═══════════════════════════════════════════════════════════
+
+### ── 获取错题列表（全部）──────────────────────────────────
+GET {{BASE_URL}}/api/mistakes?page=1&pageSize=10
+Authorization: Bearer {{TOKEN}}
+
+### ── 获取未改正的错题───────────────────────────────────────
+GET {{BASE_URL}}/api/mistakes?is_corrected=false&page=1&pageSize=20
+Authorization: Bearer {{TOKEN}}
+
+### ── 获取已改正的错题───────────────────────────────────────
+GET {{BASE_URL}}/api/mistakes?is_corrected=true
+Authorization: Bearer {{TOKEN}}
+
+### ── 标记错题为已改正（替换 mistake_id）────────────────────
+PUT {{BASE_URL}}/api/mistakes/1/corrected
+Authorization: Bearer {{TOKEN}}
+
+### ── 删除错题（替换 mistake_id）────────────────────────────
+DELETE {{BASE_URL}}/api/mistakes/1
+Authorization: Bearer {{TOKEN}}
+
+### ═══════════════════════════════════════════════════════════
+###  统计接口
+### ═══════════════════════════════════════════════════════════
+
+### ── 总体统计摘要───────────────────────────────────────────
+GET {{BASE_URL}}/api/stats/summary
+Authorization: Bearer {{TOKEN}}
+
+### ── 最近 7 天每日统计──────────────────────────────────────
+GET {{BASE_URL}}/api/stats/daily?days=7
+Authorization: Bearer {{TOKEN}}
+
+### ── 最近 30 天每日统计──────────────────────────────────────
+GET {{BASE_URL}}/api/stats/daily?days=30
+Authorization: Bearer {{TOKEN}}
+
+### ── 最近 20 题统计──────────────────────────────────────────
+GET {{BASE_URL}}/api/stats/recent20
+Authorization: Bearer {{TOKEN}}
+
+### ═══════════════════════════════════════════════════════════
+###  健康检查
+### ═══════════════════════════════════════════════════════════
+
+GET {{BASE_URL}}/health

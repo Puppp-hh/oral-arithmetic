@@ -1,0 +1,15 @@
+# node
+node_modules/
+
+# env（绝对不能提交）
+.env
+
+# logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+
+# build
+dist/
