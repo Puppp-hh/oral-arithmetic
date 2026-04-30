@@ -43,15 +43,14 @@ export const mistakeService = {
     );
     const total: number = countRows[0].total;
 
-    const listParams = [...params, pageSize, offset];
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT mb.*, p.problem_content, p.problem_type, p.difficulty_level, p.solution_steps
        FROM mistake_book mb
        JOIN problem p ON mb.problem_id = p.problem_id
        WHERE mb.student_id = ?${whereExtra}
        ORDER BY mb.last_wrong_date DESC
-       LIMIT ? OFFSET ?`,
-      listParams
+       LIMIT ${pageSize} OFFSET ${offset}`,
+      params
     );
 
     return { list: rows as MistakeWithProblem[], total, page, pageSize };

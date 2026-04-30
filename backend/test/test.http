@@ -1,0 +1,33 @@
+
+@BASE_URL = http://localhost:3000
+@STUDENT_ACCOUNT = student01
+@TEACHER_ACCOUNT = teacher01
+@PASSWORD = 123456
+
+# test
+GET {{BASE_URL}}/health
+
+
+# 404测试
+GET {{BASE_URL}}/api/abc-not-exist
+
+
+### ── 1. 学生登录 ─────────────────────────────────────────────
+# 期望：返回 token + studentPublic 用户信息
+# Redis 写入：token:1_student  EX 7200
+POST {{BASE_URL}}/api/auth/student/login
+Content-Type: application/json
+
+{
+  "account": "{{STUDENT_ACCOUNT}}",
+  "password": "{{PASSWORD}}"
+}
+
+### ── 2. 教师登录 ─────────────────────────────────────────────
+POST {{BASE_URL}}/api/auth/teacher/login
+Content-Type: application/json
+
+{
+  "account": "{{TEACHER_ACCOUNT}}",
+  "password": "{{PASSWORD}}"
+}

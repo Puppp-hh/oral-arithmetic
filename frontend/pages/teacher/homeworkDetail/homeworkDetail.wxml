@@ -1,0 +1,81 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{showContent}}">
+    <!-- 作业信息 -->
+    <view class="info-card">
+      <text class="hw-title">{{homework.title}}</text>
+      <view class="info-row">
+        <text class="info-label">题数</text>
+        <text class="info-val">{{homework.problem_count}} 道</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">截止时间</text>
+        <text class="info-val">{{homework.deadlineText}}</text>
+      </view>
+    </view>
+
+    <!-- 完成进度 -->
+    <view class="progress-card" wx:if="{{completionData}}">
+      <view class="progress-num-row">
+        <view class="pn-item">
+          <text class="pn-num">{{completionData.submittedText}}</text>
+          <text class="pn-label">已提交</text>
+        </view>
+        <view class="pn-item">
+          <text class="pn-num total">{{completionData.totalText}}</text>
+          <text class="pn-label">总人数</text>
+        </view>
+        <view class="pn-item">
+          <text class="pn-num rate">{{completionData.completionRateText}}</text>
+          <text class="pn-label">完成率</text>
+        </view>
+      </view>
+      <view class="progress-bar-wrap">
+        <view
+          class="progress-fill"
+          style="width: {{completionData.completionRateWidth}}"
+        ></view>
+      </view>
+    </view>
+
+    <!-- 学生列表 -->
+    <view class="tabs">
+      <view
+        class="{{item.className}}"
+        wx:for="{{tabs}}"
+        wx:key="value"
+        data-tab="{{item.value}}"
+        bindtap="onTabChange"
+      >{{item.label}}</view>
+    </view>
+
+    <view class="student-list">
+      <view
+        class="student-row"
+        wx:for="{{filteredList}}"
+        wx:key="student_id"
+      >
+        <view class="sr-avatar">
+          <text class="sr-avatar-text">{{item.avatarText}}</text>
+        </view>
+        <view class="sr-info">
+          <text class="sr-name">{{item.student_name}}</text>
+          <text class="sr-time">{{item.submitStatusText}}</text>
+        </view>
+        <view class="sr-right">
+          <text class="sr-score" wx:if="{{item.is_submitted}}">{{item.scoreText}}</text>
+          <view class="{{item.statusClass}}">
+            {{item.statusText}}
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{!hasFilteredList}}">
+        <text>暂无数据</text>
+      </view>
+    </view>
+  </block>
+</view>

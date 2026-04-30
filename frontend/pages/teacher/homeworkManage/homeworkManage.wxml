@@ -1,0 +1,55 @@
+<view class="page-container">
+  <!-- 顶部操作 -->
+  <view class="top-bar">
+    <text class="list-count">共 {{total}} 份作业</text>
+    <button class="btn-create" bindtap="goCreate">+ 布置作业</button>
+  </view>
+
+  <view class="list-wrap">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="hw-item"
+        wx:for="{{list}}"
+        wx:key="homework_id"
+        data-id="{{item.homework_id}}"
+        bindtap="goDetail"
+      >
+        <view class="hw-header">
+          <text class="hw-title">{{item.title}}</text>
+          <view class="tag tag-{{item.status === 'active' ? 'primary' : 'default'}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="hw-meta-row">
+          <text class="meta-item">题数 {{item.problem_count}}</text>
+          <text class="meta-sep">·</text>
+          <text class="meta-item">截止 {{item.deadlineText}}</text>
+        </view>
+        <view class="hw-footer">
+          <text class="completion-text">
+            已完成 {{item.submitted_count || 0}} / {{item.total_assigned || 0}} 人
+          </text>
+        </view>
+      </view>
+    </block>
+
+    <view class="error-state" wx:if="{{!loading && errorMessage}}">
+      <text class="error-title">加载失败</text>
+      <text class="error-desc">{{errorMessage}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新加载</button>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !errorMessage && list.length === 0}}">
+      <text>还没有布置过作业</text>
+      <button class="btn-empty-create" bindtap="goCreate">立即布置</button>
+    </view>
+
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!loading && !hasMore && list.length > 0}}">
+      <text>已加载全部</text>
+    </view>
+  </view>
+</view>

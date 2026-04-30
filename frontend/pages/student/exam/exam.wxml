@@ -1,0 +1,59 @@
+<view class="page-container">
+  <view class="tabs">
+    <view
+      class="tab-item {{activeTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="*this"
+      data-tab="{{index}}"
+      bindtap="onTabChange"
+    >{{item}}</view>
+  </view>
+
+  <view class="list-wrap">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="exam-item card"
+        wx:for="{{list}}"
+        wx:key="exam_id"
+        data-id="{{item.exam_id}}"
+        bindtap="goDetail"
+      >
+        <view class="exam-header">
+          <text class="exam-title">{{item.title}}</text>
+          <view class="tag tag-{{item.my_status === 'submitted' ? 'success' : (item.my_status === 'not_started' ? 'primary' : 'warning')}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="exam-meta">
+          <text class="meta-text">时间：{{item.startTimeText}} ~ {{item.endTimeText}}</text>
+        </view>
+        <view class="exam-meta">
+          <text class="meta-text">时长：{{item.duration_minutes}} 分钟</text>
+          <text class="meta-dot">·</text>
+          <text class="meta-text">题数：{{item.problem_count}} 道</text>
+        </view>
+        <view class="exam-score" wx:if="{{item.my_status === 'submitted' && item.my_score !== undefined}}">
+          <text class="score-text">得分：{{item.my_score}} / {{item.total_score}}</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="error-state" wx:if="{{!loading && errorMessage}}">
+      <text class="error-title">加载失败</text>
+      <text class="error-desc">{{errorMessage}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新加载</button>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !errorMessage && list.length === 0}}">
+      <text>暂无{{tabs[activeTab]}}的考试</text>
+    </view>
+
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!loading && !hasMore && list.length > 0}}">
+      <text>已加载全部</text>
+    </view>
+  </view>
+</view>

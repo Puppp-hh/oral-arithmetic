@@ -1,0 +1,124 @@
+<view class="page-container">
+
+  <!-- 试卷信息（只读） -->
+  <view class="paper-info-card">
+    <text class="paper-label">使用试卷</text>
+    <text class="paper-title">{{paperTitle}}</text>
+  </view>
+
+  <view class="form-section">
+    <!-- 考试标题 -->
+    <view class="form-item">
+      <text class="form-label">考试名称</text>
+      <input
+        class="form-input"
+        placeholder="请输入考试名称"
+        value="{{form.title}}"
+        bindinput="onTitleInput"
+        maxlength="60"
+      />
+    </view>
+
+    <!-- 开始时间 -->
+    <view class="form-item">
+      <text class="form-label">开始时间</text>
+      <view class="datetime-row">
+        <picker mode="date" value="{{form.start_date}}" start="{{minDate}}" bindchange="onStartDateChange">
+          <view class="picker-btn">
+            <text class="{{form.start_date ? 'picker-val' : 'picker-ph'}}">
+              {{form.start_date || '选择日期'}}
+            </text>
+          </view>
+        </picker>
+        <picker mode="time" value="{{form.start_time}}" bindchange="onStartTimeChange">
+          <view class="picker-btn">
+            <text class="picker-val">{{form.start_time}}</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 结束时间 -->
+    <view class="form-item">
+      <text class="form-label">结束时间</text>
+      <view class="datetime-row">
+        <picker mode="date" value="{{form.end_date}}" start="{{form.start_date || minDate}}" bindchange="onEndDateChange">
+          <view class="picker-btn">
+            <text class="{{form.end_date ? 'picker-val' : 'picker-ph'}}">
+              {{form.end_date || '选择日期'}}
+            </text>
+          </view>
+        </picker>
+        <picker mode="time" value="{{form.end_time}}" bindchange="onEndTimeChange">
+          <view class="picker-btn">
+            <text class="picker-val">{{form.end_time}}</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 考试时长 -->
+    <view class="form-item">
+      <text class="form-label">考试时长（分钟）</text>
+      <input
+        class="form-input"
+        type="number"
+        value="{{form.duration_minutes}}"
+        bindinput="onDurationInput"
+        placeholder="30"
+        maxlength="3"
+      />
+    </view>
+
+    <!-- 布置对象 -->
+    <view class="form-item">
+      <text class="form-label">选择班级</text>
+      <view class="class-select-list">
+        <view
+          class="class-select-item {{selectedClasses[item.class_id] ? 'selected' : ''}}"
+          wx:for="{{classList}}"
+          wx:key="class_id"
+          data-id="{{item.class_id}}"
+          bindtap="onToggleClass"
+        >
+          <text>{{item.class_name}}</text>
+          <text class="class-check">{{selectedClasses[item.class_id] ? '✓' : ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="assign-row">
+        <text class="form-label">发布给所选班级全体学生</text>
+        <switch checked="{{form.assign_all}}" bindchange="onToggleAssignAll" color="#2d3a4a" />
+      </view>
+    </view>
+
+    <!-- 手动选学生 -->
+    <view class="form-item" wx:if="{{!form.assign_all}}">
+      <text class="form-label">选择学生</text>
+      <view class="student-select-list">
+        <view
+          class="student-select-item {{selectedStudents[item.student_id] ? 'selected' : ''}}"
+          wx:for="{{filteredStudentList}}"
+          wx:key="student_id"
+          data-id="{{item.student_id}}"
+          bindtap="onToggleStudent"
+        >
+          <text class="ss-name">{{item.name}}</text>
+          <text class="ss-class">{{item.class_name}}</text>
+          <text class="ss-check">{{selectedStudents[item.student_id] ? '✓' : ''}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="submit-wrap">
+    <button
+      class="btn-submit"
+      disabled="{{submitting}}"
+      bindtap="onSubmit"
+    >{{submitting ? '发布中...' : '确认发布考试'}}</button>
+  </view>
+
+</view>

@@ -1,31 +1,25 @@
-/**
- * 文件说明：本地存储工具
- * 系统作用：封装 wx.setStorageSync / getStorageSync，
- *          统一管理 token / userInfo / role 的读写
- * 调用链：login.js → storage.saveLogin → wx.setStorageSync
- *         request.js → wx.getStorageSync('token')
- */
-
-function saveLogin(token, userInfo, role) {
-  wx.setStorageSync('token',    token);
-  wx.setStorageSync('userInfo', userInfo);
-  wx.setStorageSync('role',     role);
-  const app = getApp();
-  app.globalData.token    = token;
-  app.globalData.userInfo = userInfo;
-  app.globalData.role     = role;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.KEYS = void 0;
+exports.set = set;
+exports.get = get;
+exports.remove = remove;
+exports.clear = clear;
+exports.KEYS = {
+    TOKEN: 'token',
+    USER_INFO: 'userInfo',
+    ROLE: 'role',
+};
+function set(key, value) {
+    wx.setStorageSync(key, value);
 }
-
-function getToken()    { return wx.getStorageSync('token')    || ''; }
-function getUserInfo() { return wx.getStorageSync('userInfo') || null; }
-function getRole()     { return wx.getStorageSync('role')     || ''; }
-
-function clearLogin() {
-  wx.clearStorageSync();
-  const app = getApp();
-  app.globalData.token    = '';
-  app.globalData.userInfo = null;
-  app.globalData.role     = '';
+function get(key) {
+    const val = wx.getStorageSync(key);
+    return (val === '' || val === undefined || val === null) ? null : val;
 }
-
-module.exports = { saveLogin, getToken, getUserInfo, getRole, clearLogin };
+function remove(key) {
+    wx.removeStorageSync(key);
+}
+function clear() {
+    wx.clearStorageSync();
+}

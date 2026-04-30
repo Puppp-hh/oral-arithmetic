@@ -32,6 +32,9 @@ export interface Class {
   class_status: 'active' | 'inactive';
   avg_level: number;
   avg_correct_rate: number;
+  invite_code: string | null;
+  invite_code_status: 'active' | 'disabled';
+  invite_code_expire_time: Date | null;
 }
 
 // ── 学生表 student ────────────────────────────────────────────
@@ -42,6 +45,10 @@ export interface Student {
   name: string;
   class_id: number;
   grade_id: number;
+  school_name: string | null;
+  school_address: string | null;
+  school_longitude: number | null;
+  school_latitude: number | null;
   gender: 'male' | 'female' | 'unknown';
   birth_date: Date | null;
   register_date: Date;
@@ -63,6 +70,10 @@ export interface Teacher {
   email: string | null;
   phone: string | null;
   teaching_subjects: string | null;
+  school_name: string | null;
+  school_address: string | null;
+  school_longitude: number | null;
+  school_latitude: number | null;
   created_date: Date;
   account_status: 'active' | 'inactive' | 'banned';
 }
@@ -182,4 +193,83 @@ export interface LoginResult {
   token: string;
   userInfo: StudentPublic | TeacherPublic;
   role: 'student' | 'teacher';
+}
+
+// ── 作业 homework ────────────────────────────────────────────────
+
+export interface Homework {
+  homework_id:      number;
+  teacher_id:       number;
+  title:            string;
+  problem_count:    number;
+  difficulty_level: number;
+  operation_type:   string;
+  deadline:         Date;
+  status:           'active' | 'expired';
+  create_time:      Date;
+}
+
+export interface HomeworkProblem {
+  id:          number;
+  homework_id: number;
+  problem_id:  number;
+  order_index: number;
+}
+
+export interface HomeworkSubmission {
+  submission_id: number;
+  homework_id:   number;
+  student_id:    number;
+  submitted_at:  Date;
+  score:         number;
+  correct_count: number;
+  total:         number;
+  correct_rate:  number;
+  detail:        string | null;
+}
+
+// ── 试卷 + 考试 exam ────────────────────────────────────────────
+
+export interface ExamPaper {
+  paper_id:         number;
+  teacher_id:       number;
+  title:            string;
+  problem_count:    number;
+  difficulty_level: number;
+  operation_type:   string;
+  create_time:      Date;
+}
+
+export interface ExamPaperProblem {
+  id:          number;
+  paper_id:    number;
+  problem_id:  number;
+  score:       number;
+  order_index: number;
+}
+
+export interface Exam {
+  exam_id:          number;
+  paper_id:         number;
+  teacher_id:       number;
+  title:            string;
+  start_time:       Date;
+  end_time:         Date;
+  duration_minutes: number;
+  status:           'draft' | 'published' | 'finished';
+  problem_count:    number;
+  total_score:      number;
+  create_time:      Date;
+}
+
+export interface ExamSubmission {
+  submission_id: number;
+  exam_id:       number;
+  student_id:    number;
+  submitted_at:  Date;
+  score:         number;
+  total_score:   number;
+  correct_count: number;
+  total_count:   number;
+  correct_rate:  number;
 }

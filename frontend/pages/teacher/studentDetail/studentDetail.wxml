@@ -1,0 +1,103 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading && student}}">
+
+    <!-- 基本信息 -->
+    <view class="info-card">
+      <view class="card-header">
+        <text class="card-title">基本信息</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">姓名</text>
+        <text class="info-val">{{student.name}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">学号</text>
+        <text class="info-val">{{student.account}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">当前等级</text>
+        <text class="info-val">Lv.{{student.current_level}} {{student.levelTitle}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">注册时间</text>
+        <text class="info-val">{{student.registerDateText}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">上次登录</text>
+        <text class="info-val">{{student.lastLoginText || '未登录'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">账号状态</text>
+        <view class="tag {{student.account_status === 'active' ? 'tag-success' : 'tag-danger'}}">
+          {{student.account_status === 'active' ? '正常' : '已禁用'}}
+        </view>
+      </view>
+
+      <!-- 密码管理 -->
+      <view class="pwd-section">
+        <text class="pwd-notice">生产环境中不应展示明文密码，请通过重置密码下发临时密码。</text>
+        <button
+          class="btn-reset-pwd"
+          disabled="{{resetting}}"
+          bindtap="onResetPassword"
+        >{{resetting ? '处理中...' : '重置密码'}}</button>
+      </view>
+    </view>
+
+    <!-- 学习统计 -->
+    <view class="info-card" wx:if="{{stats}}">
+      <view class="card-header">
+        <text class="card-title">学习数据</text>
+      </view>
+      <view class="stats-row">
+        <view class="s-cell">
+          <text class="s-num">{{student.total_problems || 0}}</text>
+          <text class="s-label">累计题数</text>
+        </view>
+        <view class="s-cell">
+          <text class="s-num rate">{{student.rateText}}</text>
+          <text class="s-label">正确率</text>
+        </view>
+        <view class="s-cell">
+          <text class="s-num">{{stats.mistakesCount}}</text>
+          <text class="s-label">错题数</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 近期每日趋势 -->
+    <view class="info-card" wx:if="{{dailyList.length > 0}}">
+      <view class="card-header">
+        <text class="card-title">近期练习</text>
+      </view>
+      <view
+        class="daily-row"
+        wx:for="{{dailyList}}"
+        wx:key="statistic_date"
+      >
+        <text class="daily-date">{{item.dateText}}</text>
+        <view class="bar-wrap">
+          <view class="bar-fill" style="width: {{item.barWidth || '0%'}}"></view>
+        </view>
+        <text class="daily-rate">{{item.rateText}}</text>
+        <text class="daily-count">({{item.daily_problems}}题)</text>
+      </view>
+    </view>
+
+  </block>
+
+  <!-- 临时密码弹窗 -->
+  <view class="pwd-modal-mask" wx:if="{{showTempPwd}}" bindtap="closeTempPwd">
+    <view class="pwd-modal" catchtap="noop">
+      <text class="pwd-modal-title">临时密码已生成</text>
+      <text class="pwd-value">{{tempPassword}}</text>
+      <text class="pwd-modal-notice">请将此临时密码告知学生，并提醒学生尽快登录后修改密码。</text>
+      <button class="btn-close-pwd" bindtap="closeTempPwd">知道了</button>
+    </view>
+  </view>
+
+</view>

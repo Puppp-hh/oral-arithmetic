@@ -1,0 +1,74 @@
+<view class="page-container">
+
+  <!-- 顶部操作栏 -->
+  <view class="toolbar">
+    <text class="toolbar-title">我的班级（{{list.length}}）</text>
+    <view class="create-btn" bindtap="goCreate">+ 创建班级</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view wx:if="{{loading}}" class="loading-wrap">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:elif="{{!list.length}}" class="empty-state" bindtap="goCreate">
+    <view class="empty-icon">
+      <text class="empty-plus">+</text>
+    </view>
+    <text class="empty-title">还没有班级</text>
+    <text class="empty-desc">点击创建第一个班级，系统自动生成邀请码</text>
+  </view>
+
+  <!-- 班级列表 -->
+  <view wx:else class="class-list">
+    <view class="class-card"
+          wx:for="{{list}}" wx:key="class_id"
+          data-id="{{item.class_id}}">
+      <view class="class-card-body" bindtap="goInviteCode" data-id="{{item.class_id}}">
+        <view class="class-left">
+          <text class="class-grade-tag">{{item.grade_name}}</text>
+          <text class="class-name">{{item.class_name}}</text>
+          <text class="class-meta">{{item.student_count}} 名学生</text>
+        </view>
+        <view class="class-right">
+          <view wx:if="{{item.invite_code}}">
+            <text class="code-label">邀请码</text>
+            <text class="code-value">{{item.invite_code}}</text>
+            <view class="code-status {{item.invite_code_status === 'active' ? 'active' : 'disabled'}}">
+              {{item.invite_code_status === 'active' ? '有效' : '已停用'}}
+            </view>
+          </view>
+          <view wx:else>
+            <text class="no-code">暂无邀请码</text>
+          </view>
+          <text class="arrow-icon">›</text>
+        </view>
+      </view>
+      <view class="class-card-actions">
+        <view class="delete-btn {{item.student_count > 0 ? 'disabled' : ''}}"
+          catchtap="onDeleteClass"
+          data-id="{{item.class_id}}"
+          data-count="{{item.student_count}}"
+          data-name="{{item.class_name}}">
+          删除
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="delete-mask" wx:if="{{deleteDialog.visible}}">
+    <view class="delete-dialog">
+      <view class="delete-icon">!</view>
+      <text class="delete-title">删除班级</text>
+      <text class="delete-desc">
+        确认删除「{{deleteDialog.className}}」？删除后该班级邀请码将停用，且不会再出现在班级列表中。
+      </text>
+      <view class="delete-actions">
+        <view class="dialog-btn cancel" bindtap="onCancelDelete">取消</view>
+        <view class="dialog-btn danger" bindtap="onConfirmDelete">确认删除</view>
+      </view>
+    </view>
+  </view>
+
+</view>

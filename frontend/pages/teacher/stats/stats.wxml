@@ -1,0 +1,48 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading && classStats}}">
+    <!-- 班级总览 -->
+    <view class="section-title">班级总览</view>
+    <view class="stats-grid">
+      <view class="stat-cell">
+        <text class="cell-num">{{classStats.student_count || 0}}</text>
+        <text class="cell-label">学生人数</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num rate">{{classStats.avgRateText || '-'}}</text>
+        <text class="cell-label">平均正确率</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num">{{classStats.homework_count || 0}}</text>
+        <text class="cell-label">作业总数</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num">{{classStats.exam_count || 0}}</text>
+        <text class="cell-label">考试总数</text>
+      </view>
+    </view>
+
+    <!-- 高频错题 -->
+    <view class="section-card" wx:if="{{topMistakes.length > 0}}">
+      <text class="section-title">高频错题 TOP10</text>
+      <view
+        class="mistake-row"
+        wx:for="{{topMistakes}}"
+        wx:key="index"
+      >
+        <view class="rank-badge rank-{{index < 3 ? index + 1 : 'other'}}">{{index + 1}}</view>
+        <view class="mistake-info">
+          <text class="mistake-content">{{item.problem_content}}</text>
+          <text class="mistake-count">错误 {{item.error_count}} 次</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && topMistakes.length === 0}}">
+      <text>暂无统计数据</text>
+    </view>
+  </block>
+</view>

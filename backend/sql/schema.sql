@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS teacher (
   email             VARCHAR(100)                            COMMENT '邮箱',
   phone             VARCHAR(20)                             COMMENT '手机号',
   teaching_subjects VARCHAR(100)                            COMMENT '教授科目',
+  school_name       VARCHAR(100)                            COMMENT '学校名称',
+  school_address    VARCHAR(255)                            COMMENT '学校地址',
+  school_longitude  DECIMAL(10,7)                           COMMENT '学校经度',
+  school_latitude   DECIMAL(10,7)                           COMMENT '学校纬度',
   created_date      TIMESTAMP    DEFAULT CURRENT_TIMESTAMP  COMMENT '创建日期',
   account_status    ENUM('active','inactive','banned') DEFAULT 'active' COMMENT '账户状态',
 
@@ -56,11 +60,16 @@ CREATE TABLE IF NOT EXISTS class (
   student_count    SMALLINT     DEFAULT 0                  COMMENT '学生数',
   created_date     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP  COMMENT '创建日期',
   class_status     ENUM('active','inactive') DEFAULT 'active' COMMENT '班级状态',
+  invite_code             VARCHAR(10)  UNIQUE              COMMENT '班级邀请码',
+  invite_code_status      ENUM('active','disabled') DEFAULT 'active'
+                                                               COMMENT '邀请码状态',
+  invite_code_expire_time DATETIME                          COMMENT '邀请码过期时间',
   avg_level        DECIMAL(4,2) DEFAULT 0.00               COMMENT '班级平均等级',
   avg_correct_rate DECIMAL(5,2) DEFAULT 0.00               COMMENT '班级平均正确率(%)',
 
   INDEX idx_grade_id    (grade_id),
   INDEX idx_class_status(class_status),
+  INDEX idx_invite_code (invite_code),
   FOREIGN KEY (grade_id)   REFERENCES grade(grade_id),
   FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='班级信息表';
@@ -76,6 +85,10 @@ CREATE TABLE IF NOT EXISTS student (
   name                  VARCHAR(50)    NOT NULL                   COMMENT '姓名',
   class_id              BIGINT         NOT NULL                   COMMENT '班级ID',
   grade_id              BIGINT         NOT NULL                   COMMENT '年级ID',
+  school_name           VARCHAR(100)                              COMMENT '学校名称',
+  school_address        VARCHAR(255)                              COMMENT '学校地址',
+  school_longitude      DECIMAL(10,7)                             COMMENT '学校经度',
+  school_latitude       DECIMAL(10,7)                             COMMENT '学校纬度',
   gender                ENUM('male','female','unknown')           COMMENT '性别',
   birth_date            DATE                                      COMMENT '出生日期',
   register_date         TIMESTAMP      DEFAULT CURRENT_TIMESTAMP  COMMENT '注册日期',

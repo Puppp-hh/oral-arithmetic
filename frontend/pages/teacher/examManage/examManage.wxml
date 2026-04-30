@@ -1,0 +1,52 @@
+<view class="page-container">
+  <view class="top-bar">
+    <text class="list-count">共 {{total}} 场考试</text>
+    <button class="btn-create" bindtap="goCreatePaper">+ 新建考试</button>
+  </view>
+
+  <view class="list-wrap">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="exam-item"
+        wx:for="{{list}}"
+        wx:key="exam_id"
+        data-id="{{item.exam_id}}"
+        bindtap="goDetail"
+      >
+        <view class="exam-header">
+          <text class="exam-title">{{item.title}}</text>
+          <view class="tag tag-{{item.status === 'published' ? 'primary' : (item.status === 'finished' ? 'default' : 'warning')}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="exam-meta">
+          <text class="meta-item">{{item.startTimeText}} ~ {{item.endTimeText}}</text>
+        </view>
+        <view class="exam-footer">
+          <text class="footer-item">时长 {{item.duration_minutes}} 分钟</text>
+          <text class="footer-sep">·</text>
+          <text class="footer-item">已交 {{item.submitted_count || 0}} / {{item.total_assigned || 0}}</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="error-state" wx:if="{{!loading && errorMessage}}">
+      <text class="error-title">加载失败</text>
+      <text class="error-desc">{{errorMessage}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新加载</button>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !errorMessage && list.length === 0}}">
+      <text>还没有创建过考试</text>
+      <button class="btn-empty-create" bindtap="goCreatePaper">立即创建</button>
+    </view>
+
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!loading && !hasMore && list.length > 0}}">
+      <text>已加载全部</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,45 @@
+<view class="page-container">
+  <view class="form-card">
+
+    <view class="form-tip">
+      <text class="tip-icon">💡</text>
+      <text class="tip-text">创建班级后系统自动生成邀请码，分享给学生即可加入</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">所属年级</text>
+      <picker mode="selector"
+        range="{{gradeNames}}"
+        value="{{selectedGradeIndex}}"
+        bindchange="onGradeChange">
+        <view class="picker-row">
+          <text class="picker-value">{{gradeNames[selectedGradeIndex]}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">班级序号</text>
+      <picker mode="selector"
+        range="{{classNumbers}}"
+        value="{{selectedClassIndex}}"
+        bindchange="onClassNoChange">
+        <view class="picker-row">
+          <text class="picker-value">{{classNumbers[selectedClassIndex]}}</text>
+          <text class="picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="preview-row">
+      <text class="preview-label">将创建</text>
+      <text class="preview-name">{{gradeNames[selectedGradeIndex]}}{{classNumbers[selectedClassIndex]}}</text>
+    </view>
+
+    <button class="btn-submit" disabled="{{loading}}" bindtap="onSubmit">
+      {{loading ? '创建中...' : '创建班级'}}
+    </button>
+
+  </view>
+</view>

@@ -11,8 +11,9 @@
  *   problemService       → statsService.upsertDailyStat（答题后自动触发）
  *   → pool.execute → learning_statistic / student / student_level
  */
-import { pool } from '../config/database';
-import { RowDataPacket } from 'mysql2';
+import { pool } from "../config/database";
+import { RowDataPacket } from "mysql2";
+import { redisService, CacheKeys, CacheTTL } from "./redis.service";
 
 // ── 返回类型 ──────────────────────────────────────────────────
 
@@ -60,25 +61,38 @@ export interface Recent20Result {
 // ── service ───────────────────────────────────────────────────
 
 export const statsService = {
-
   // ── 总览摘要 ─────────────────────────────────────────────
+  /**
+   * 缓存策略：stats:summary:{studentId} TTL=60s
+   * 答题后由 upsertDailyStat 主动 deleteCache，保证数据近实时
+   * 调用链：controller → getSummary → Redis hit → 返回 / miss → 3次 DB 查询 → 回写 Redis
+   */
   async getSummary(studentId: number): Promise<Summary> {
+    const cacheKey = CacheKeys.statsSummary(studentId);
+
+    // ① 尝试 Redis 缓存（60s 内的摘要直接返回）
+    const cached = await redisService.getCache<Summary>(cacheKey);
+    if (cached) return cached;
+
+    // ② 缓存未命中，聚合 DB 数据
     const [studentRows] = await pool.execute<RowDataPacket[]>(
       `SELECT name, total_problems, cumulative_correct_rate, current_level
        FROM student WHERE student_id = ?`,
-      [studentId]
+      [studentId],
     );
-    if (studentRows.length === 0) throw new Error('学生不存在');
+    if (studentRows.length === 0) throw new Error("学生不存在");
     const s = studentRows[0];
 
     const [levelRows] = await pool.execute<RowDataPacket[]>(
       `SELECT recent_20_correct_rate, is_promotion_qualified
        FROM student_level WHERE student_id = ?`,
-      [studentId]
+      [studentId],
     );
-    const lvl = levelRows[0] ?? { recent_20_correct_rate: 0, is_promotion_qualified: false };
+    const lvl = levelRows[0] ?? {
+      recent_20_correct_rate: 0,
+      is_promotion_qualified: false,
+    };
 
-    // 今日数据
     const [todayRows] = await pool.execute<RowDataPacket[]>(
       `SELECT
          COUNT(*) AS daily_problems,
@@ -86,11 +100,11 @@ export const statsService = {
            AS today_correct_rate
        FROM training_record
        WHERE student_id = ? AND DATE(answer_date) = CURDATE()`,
-      [studentId]
+      [studentId],
     );
     const today = todayRows[0];
 
-    return {
+    const summary: Summary = {
       student_name: s.name,
       total_problems: s.total_problems,
       cumulative_correct_rate: parseFloat(s.cumulative_correct_rate) || 0,
@@ -100,13 +114,21 @@ export const statsService = {
       today_problems: today.daily_problems || 0,
       today_correct_rate: parseFloat(today.today_correct_rate) || 0,
     };
+
+    // ③ 回写缓存（TTL=60s）
+    await redisService.setCache(cacheKey, summary, CacheTTL.STATS_SUMMARY);
+
+    return summary;
   },
 
   // ── 每日统计列表 ─────────────────────────────────────────
-  async getDailyStats(studentId: number, days: number): Promise<DailyStatRow[]> {
+  async getDailyStats(
+    studentId: number,
+    days: number,
+  ): Promise<DailyStatRow[]> {
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT
-         statistic_date,
+         DATE_FORMAT(statistic_date, '%Y-%m-%d') as statistic_date,
          daily_problems,
          daily_correct,
          daily_wrong,
@@ -121,7 +143,7 @@ export const statsService = {
        WHERE student_id = ?
          AND statistic_date >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
        ORDER BY statistic_date DESC`,
-      [studentId, days]
+      [studentId, days],
     );
     return rows as DailyStatRow[];
   },
@@ -142,7 +164,7 @@ export const statsService = {
        WHERE tr.student_id = ?
        ORDER BY tr.created_time DESC
        LIMIT 20`,
-      [studentId]
+      [studentId],
     );
 
     const total = rows.length;
@@ -152,8 +174,9 @@ export const statsService = {
       total,
       correct,
       wrong: total - correct,
-      correct_rate: total > 0 ? parseFloat(((correct / total) * 100).toFixed(2)) : 0,
-      records: rows as Recent20Result['records'],
+      correct_rate:
+        total > 0 ? parseFloat(((correct / total) * 100).toFixed(2)) : 0,
+      records: rows as Recent20Result["records"],
     };
   },
 
@@ -198,11 +221,14 @@ export const statsService = {
        FROM training_record tr
        JOIN problem p ON tr.problem_id = p.problem_id
        WHERE tr.student_id = ? AND DATE(tr.answer_date) = CURDATE()`,
-      [studentId]
+      [studentId],
     );
 
     if (rows.length === 0 || rows[0].daily_problems === 0) return;
     const d = rows[0];
+
+    // 主动删除摘要缓存，保证下次 getSummary 取到最新数据
+    await redisService.deleteCache(CacheKeys.statsSummary(studentId));
 
     await pool.execute(
       `INSERT INTO learning_statistic
@@ -235,7 +261,7 @@ export const statsService = {
         d.multiplication_correct_rate ?? 0,
         d.division_correct_rate ?? 0,
         d.mixed_operation_correct_rate ?? 0,
-      ]
+      ],
     );
   },
 };

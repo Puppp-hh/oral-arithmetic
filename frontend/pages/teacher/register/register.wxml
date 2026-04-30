@@ -1,0 +1,93 @@
+<view class="reg-container">
+  <view class="reg-header">
+    <view class="reg-logo">
+      <text class="logo-icon">T</text>
+    </view>
+    <text class="reg-title">教师注册</text>
+    <text class="reg-subtitle">注册后可创建班级并生成邀请码</text>
+  </view>
+
+  <view class="reg-form">
+
+    <view class="form-item">
+      <text class="form-label">工号</text>
+      <input class="form-input" placeholder="3-50位字母/数字/下划线"
+        value="{{form.account}}" bindinput="onInput" data-field="account"
+        maxlength="50" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" placeholder="至少6位" password
+        value="{{form.password}}" bindinput="onInput" data-field="password"
+        maxlength="30" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">确认密码</text>
+      <input class="form-input" placeholder="再次输入密码" password
+        value="{{form.confirmPassword}}" bindinput="onInput" data-field="confirmPassword"
+        maxlength="30" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">姓名</text>
+      <input class="form-input" placeholder="请输入真实姓名"
+        value="{{form.name}}" bindinput="onInput" data-field="name"
+        maxlength="50" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">学校名称 <text class="required">*</text></text>
+      <view class="school-search-row">
+        <input class="form-input school-input" placeholder="输入学校名称，自动联想"
+          value="{{form.schoolName}}" bindinput="onInput" data-field="schoolName"
+          maxlength="100" confirm-type="search" bindconfirm="onSearchSchool" />
+      </view>
+      <text class="school-assist" wx:if="{{!schoolSelected}}">
+        {{schoolSearching ? '正在联想学校...' : '输入至少 2 个字后自动联想'}}
+      </text>
+      <text class="school-selected" wx:if="{{schoolSelected && form.schoolAddress}}">
+        {{form.schoolAddress}}
+      </text>
+      <scroll-view class="school-result-list" scroll-y wx:if="{{schoolList.length > 0}}">
+        <view
+          class="school-result-item"
+          wx:for="{{schoolList}}"
+          wx:key="id"
+          data-index="{{index}}"
+          bindtap="onSelectSchool"
+        >
+          <text class="school-name">{{item.name}}</text>
+          <text class="school-address">{{item.city}}{{item.district}} {{item.address}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">手机号 <text class="optional">（选填）</text></text>
+      <input class="form-input" placeholder="例如：13800138000"
+        value="{{form.phone}}" bindinput="onInput" data-field="phone"
+        maxlength="11" type="number" confirm-type="next" />
+      <text class="form-hint">格式：11 位中国大陆手机号，以 13-19 开头</text>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">邮箱 <text class="optional">（选填）</text></text>
+      <input class="form-input" placeholder="例如：teacher@example.com"
+        value="{{form.email}}" bindinput="onInput" data-field="email"
+        maxlength="100" confirm-type="done" bindconfirm="onSubmit" />
+      <text class="form-hint">格式：name@example.com</text>
+    </view>
+
+    <button class="btn-submit" disabled="{{loading}}" bindtap="onSubmit">
+      {{loading ? '注册中...' : '立即注册'}}
+    </button>
+
+    <view class="footer-links">
+      <text class="link-text">已有账号？</text>
+      <text class="link-btn" bindtap="goLogin">去登录</text>
+    </view>
+
+  </view>
+</view>

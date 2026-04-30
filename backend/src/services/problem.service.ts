@@ -19,22 +19,22 @@
  *             → updateStudentLevel            (升降级)
  *             → statsService.upsertDailyStat  (每日统计)
  */
-import { pool } from '../config/database';
-import { redisService } from './redis.service';
-import { statsService } from './stats.service';
+import { pool } from "../config/database";
+import { redisService, CacheKeys, CacheTTL } from "./redis.service";
+import { statsService } from "./stats.service";
 import {
   generateProblems as dynGenerate,
   normalizeAnswer,
   RawProblem,
-} from '../utils/problem-generator';
+} from "../utils/problem-generator";
 import {
   Problem,
   GenerateProblemDto,
   SubmitAnswerDto,
   OperationType,
-} from '../types';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
-import { v4 as uuidv4 } from 'uuid';
+} from "../types";
+import { RowDataPacket, ResultSetHeader } from "mysql2";
+import { v4 as uuidv4 } from "uuid";
 
 // ── 返回类型定义 ──────────────────────────────────────────────
 
@@ -57,18 +57,23 @@ export interface ProblemWithId extends RawProblem {
 // ── 主 service ────────────────────────────────────────────────
 
 export const problemService = {
-
   /**
    * 出题：先从 DB 取，不足则动态生成并持久化入库
    * 支持按 difficulty_level 和 operation_type 筛选
    * 题目池缓存到 Redis，TTL 5 分钟
    */
   async generateProblems(dto: GenerateProblemDto): Promise<Problem[]> {
+    // 参数校验已由 validate 中间件完成，直接使用 dto 中的字段（已 coercion）
     const level = Math.min(10, Math.max(1, dto.difficulty_level ?? 1));
+    // count 默认 10，范围 1-20
     const count = Math.min(20, Math.max(1, dto.count ?? 10));
-    const cacheKey = `problems:level:${level}:type:${dto.operation_type ?? 'all'}`;
+    if (dto.operation_type && !isOperationUnlocked(level, dto.operation_type)) {
+      throw new Error(`Lv.${getOperationMinLevel(dto.operation_type)} 解锁该题型`);
+    }
+    // 使用 CacheKeys 工厂，统一 key 格式：problem:pool:level:{n}:type:{t}
+    const cacheKey = CacheKeys.problemPool(level, dto.operation_type ?? "all");
 
-    // ① 尝试 Redis 缓存
+    // ① 尝试 Redis 缓存（题目池命中直接随机切片返回）
     const cached = await redisService.getCache<Problem[]>(cacheKey);
     if (cached && cached.length >= count) {
       return shuffleAndSlice(cached, count);
@@ -80,24 +85,28 @@ export const problemService = {
     const params: (string | number)[] = [level];
 
     if (dto.operation_type) {
-      sql += ' AND problem_type = ?';
+      sql += " AND problem_type = ?";
       params.push(dto.operation_type);
     }
-    sql += ' LIMIT 50';
+    sql += " LIMIT 50";
 
     const [rows] = await pool.execute<RowDataPacket[]>(sql, params);
     let problems = rows as Problem[];
 
     // ③ DB 题目不足时，动态生成补充并持久化
     if (problems.length < count) {
-      const needed = count - problems.length + 10; // 多生成几道作为储备
-      const raw = dynGenerate(level, needed, dto.operation_type as OperationType | undefined);
+      const needed = count - problems.length + 10;
+      const raw = dynGenerate(
+        level,
+        needed,
+        dto.operation_type as OperationType | undefined,
+      );
       const inserted = await batchInsertProblems(raw);
       problems = [...problems, ...inserted];
     }
 
-    // ④ 写入 Redis 缓存
-    await redisService.setCache(cacheKey, problems, 300);
+    // ④ 写入 Redis 缓存（使用统一 TTL 常量：300s）
+    await redisService.setCache(cacheKey, problems, CacheTTL.PROBLEM_POOL);
 
     return shuffleAndSlice(problems, count);
   },
@@ -105,20 +114,25 @@ export const problemService = {
   /**
    * 判题：标准化比对答案，写训练记录，维护错题本，触发等级+统计更新
    */
-  async submitAnswer(studentId: number, dto: SubmitAnswerDto): Promise<SubmitResult> {
+  async submitAnswer(
+    studentId: number,
+    dto: SubmitAnswerDto,
+  ): Promise<SubmitResult> {
     // ① 取题目
     const [rows] = await pool.execute<RowDataPacket[]>(
       `SELECT * FROM problem WHERE problem_id = ? AND enable_status = 'enabled' LIMIT 1`,
-      [dto.problem_id]
+      [dto.problem_id],
     );
-    if (rows.length === 0) throw new Error('题目不存在或已下架');
+    if (rows.length === 0) throw new Error("题目不存在或已下架");
     const problem = rows[0] as Problem;
 
     // ② 标准化判题（支持 "5" == "5.0" == "5.00"）
     const isCorrect =
-      normalizeAnswer(dto.answer_content) === normalizeAnswer(problem.standard_answer);
+      normalizeAnswer(dto.answer_content) ===
+      normalizeAnswer(problem.standard_answer);
     const score = isCorrect ? 10 : 0;
     const sessionId = dto.session_id ?? uuidv4();
+    const prevLevel = await getCurrentStudentLevel(studentId);
 
     // ③ 写训练记录
     const [insertResult] = await pool.execute<ResultSetHeader>(
@@ -135,13 +149,13 @@ export const problemService = {
         score,
         dto.is_review ?? false,
         sessionId,
-      ]
+      ],
     );
 
     // ④ 更新题目使用频率
     await pool.execute(
-      'UPDATE problem SET usage_frequency = usage_frequency + 1 WHERE problem_id = ?',
-      [dto.problem_id]
+      "UPDATE problem SET usage_frequency = usage_frequency + 1 WHERE problem_id = ?",
+      [dto.problem_id],
     );
 
     // ⑤ 错题本维护
@@ -153,7 +167,7 @@ export const problemService = {
         `UPDATE mistake_book
          SET is_corrected = TRUE, corrected_date = NOW()
          WHERE student_id = ? AND problem_id = ? AND is_corrected = FALSE`,
-        [studentId, dto.problem_id]
+        [studentId, dto.problem_id],
       );
     }
 
@@ -162,13 +176,6 @@ export const problemService = {
 
     // ⑦ 更新今日学习统计
     await statsService.upsertDailyStat(studentId);
-
-    // ⑧ 获取当前等级（用于判断是否发生变化）
-    const [prevLvRows] = await pool.execute<RowDataPacket[]>(
-      'SELECT current_level FROM student WHERE student_id = ?',
-      [studentId]
-    );
-    const prevLevel = prevLvRows.length > 0 ? prevLvRows[0].current_level : 1;
 
     return {
       is_correct: isCorrect,
@@ -185,13 +192,29 @@ export const problemService = {
 
   /**
    * 按 ID 查单题（含解题步骤，用于错题本展示）
+   * 缓存策略：problem:id:{problemId} TTL=3600s（题目内容极少变化，大幅减少 DB 查询）
+   * 调用链：controller → getProblemById → Redis hit（返回） / miss → DB → 回写 Redis
    */
   async getProblemById(problemId: number): Promise<Problem | null> {
+    const cacheKey = CacheKeys.problemById(problemId);
+
+    // ① 尝试 Redis 缓存
+    const cached = await redisService.getCache<Problem>(cacheKey);
+    if (cached) return cached;
+
+    // ② 缓存未命中，查 DB
     const [rows] = await pool.execute<RowDataPacket[]>(
-      'SELECT * FROM problem WHERE problem_id = ? LIMIT 1',
-      [problemId]
+      "SELECT * FROM problem WHERE problem_id = ? LIMIT 1",
+      [problemId],
     );
-    return rows.length > 0 ? (rows[0] as Problem) : null;
+    if (rows.length === 0) return null;
+
+    const problem = rows[0] as Problem;
+
+    // ③ 回写缓存（TTL=3600s）
+    await redisService.setCache(cacheKey, problem, CacheTTL.PROBLEM_DETAIL);
+
+    return problem;
   },
 };
 
@@ -216,7 +239,7 @@ async function batchInsertProblems(raws: RawProblem[]): Promise<Problem[]> {
           raw.difficulty_level,
           raw.standard_answer,
           raw.solution_steps,
-        ]
+        ],
       );
       if (res.insertId > 0) {
         result.push({
@@ -224,7 +247,7 @@ async function batchInsertProblems(raws: RawProblem[]): Promise<Problem[]> {
           ...raw,
           creator_id: null,
           create_date: new Date(),
-          enable_status: 'enabled',
+          enable_status: "enabled",
           usage_frequency: 0,
           error_index: 0,
         } as Problem);
@@ -242,7 +265,29 @@ async function batchInsertProblems(raws: RawProblem[]): Promise<Problem[]> {
 async function upsertMistake(
   studentId: number,
   problem: Problem,
-  studentAnswer: string
+  studentAnswer: string,
+): Promise<void> {
+  const pendingKey = CacheKeys.pendingMistake(studentId, problem.problem_id);
+  await redisService.setCache(
+    pendingKey,
+    {
+      student_id: studentId,
+      problem_id: problem.problem_id,
+      standard_answer: problem.standard_answer,
+      student_answer: studentAnswer,
+      created_at: new Date().toISOString(),
+    },
+    CacheTTL.PENDING_MISTAKE,
+  );
+
+  await persistMistake(studentId, problem, studentAnswer);
+  await redisService.deleteCache(pendingKey).catch(() => undefined);
+}
+
+async function persistMistake(
+  studentId: number,
+  problem: Problem,
+  studentAnswer: string,
 ): Promise<void> {
   // 用 INSERT ... ON DUPLICATE KEY UPDATE 替代先查后写，减少一次 DB 往返
   await pool.execute(
@@ -254,7 +299,7 @@ async function upsertMistake(
        wrong_count    = wrong_count + 1,
        last_wrong_date = NOW(),
        is_corrected   = FALSE`,
-    [studentId, problem.problem_id, problem.standard_answer, studentAnswer]
+    [studentId, problem.problem_id, problem.standard_answer, studentAnswer],
   );
 
   // 重新计算错误指数：错误次数 / 使用次数 * 100
@@ -269,7 +314,7 @@ async function upsertMistake(
        WHERE tr.problem_id = p.problem_id
      )
      WHERE p.problem_id = ?`,
-    [problem.problem_id]
+    [problem.problem_id],
   );
 }
 
@@ -278,18 +323,20 @@ async function upsertMistake(
  * 返回新等级和正确率（用于响应前端）
  */
 async function updateStudentLevel(
-  studentId: number
+  studentId: number,
 ): Promise<{ newLevel: number; rate: number }> {
   // 取最近20条（不区分是否复习，统一计入）
   const [recent] = await pool.execute<RowDataPacket[]>(
     `SELECT is_correct FROM training_record
      WHERE student_id = ? ORDER BY created_time DESC LIMIT 20`,
-    [studentId]
+    [studentId],
   );
   const total = recent.length;
   if (total === 0) return { newLevel: 1, rate: 0 };
 
-  const correct = recent.filter((r: RowDataPacket) => Boolean(r.is_correct)).length;
+  const correct = recent.filter((r: RowDataPacket) =>
+    Boolean(r.is_correct),
+  ).length;
   const rate = parseFloat(((correct / total) * 100).toFixed(2));
   const qualified = rate >= 85;
 
@@ -304,13 +351,13 @@ async function updateStudentLevel(
        wrong_problems          = VALUES(wrong_problems),
        recent_20_correct_rate  = VALUES(recent_20_correct_rate),
        is_promotion_qualified  = VALUES(is_promotion_qualified)`,
-    [studentId, correct, total - correct, rate, qualified]
+    [studentId, correct, total - correct, rate, qualified],
   );
 
   // 查现有等级
   const [lvRows] = await pool.execute<RowDataPacket[]>(
-    'SELECT current_level FROM student_level WHERE student_id = ?',
-    [studentId]
+    "SELECT current_level FROM student_level WHERE student_id = ?",
+    [studentId],
   );
   let level: number = lvRows.length > 0 ? lvRows[0].current_level : 1;
 
@@ -321,7 +368,7 @@ async function updateStudentLevel(
       `UPDATE student_level
        SET current_level = ?, promotion_date = NOW()
        WHERE student_id = ?`,
-      [level, studentId]
+      [level, studentId],
     );
   } else if (total === 20 && rate < 60 && level > 1) {
     // 降级：正确率 < 60%
@@ -330,7 +377,7 @@ async function updateStudentLevel(
       `UPDATE student_level
        SET current_level = ?, promotion_date = NOW()
        WHERE student_id = ?`,
-      [level, studentId]
+      [level, studentId],
     );
   }
 
@@ -347,7 +394,7 @@ async function updateStudentLevel(
            FROM training_record WHERE student_id = ?
          )
      WHERE student_id = ?`,
-    [level, studentId, studentId, studentId]
+    [level, studentId, studentId, studentId],
   );
 
   return { newLevel: level, rate };
@@ -360,4 +407,31 @@ function shuffleAndSlice<T>(arr: T[], n: number): T[] {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy.slice(0, Math.min(n, copy.length));
+}
+
+function getOperationMinLevel(type: OperationType): number {
+  const minLevels: Record<OperationType, number> = {
+    addition: 1,
+    subtraction: 2,
+    multiplication: 3,
+    division: 4,
+    mixed: 5,
+  };
+  return minLevels[type];
+}
+
+function isOperationUnlocked(level: number, type: OperationType): boolean {
+  return level >= getOperationMinLevel(type);
+}
+
+async function getCurrentStudentLevel(studentId: number): Promise<number> {
+  const [rows] = await pool.execute<RowDataPacket[]>(
+    `SELECT COALESCE(sl.current_level, s.current_level, 1) AS current_level
+     FROM student s
+     LEFT JOIN student_level sl ON sl.student_id = s.student_id
+     WHERE s.student_id = ?
+     LIMIT 1`,
+    [studentId],
+  );
+  return rows.length > 0 ? Number(rows[0].current_level || 1) : 1;
 }

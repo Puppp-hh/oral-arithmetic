@@ -1,0 +1,124 @@
+<view class="page-container">
+
+  <view class="form-section">
+    <!-- 标题 -->
+    <view class="form-item">
+      <text class="form-label">作业标题</text>
+      <input
+        class="form-input"
+        placeholder="请输入作业标题"
+        value="{{form.title}}"
+        bindinput="onTitleInput"
+        maxlength="50"
+      />
+    </view>
+
+    <!-- 题型 -->
+    <view class="form-item">
+      <text class="form-label">题型</text>
+      <view class="option-list">
+        <view
+          class="option-btn {{form.operation_type === item.value ? 'active' : ''}}"
+          wx:for="{{operationTypes}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          bindtap="onSelectType"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 难度 -->
+    <view class="form-item">
+      <text class="form-label">难度等级</text>
+      <view class="option-list">
+        <view
+          class="option-btn {{form.difficulty_level === item.value ? 'active' : ''}}"
+          wx:for="{{difficultyLevels}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          bindtap="onSelectLevel"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 题目数量 -->
+    <view class="form-item">
+      <text class="form-label">题目数量</text>
+      <view class="option-list">
+        <view
+          class="option-btn {{form.problem_count === item ? 'active' : ''}}"
+          wx:for="{{countOptions}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="onSelectCount"
+        >{{item}} 道</view>
+      </view>
+    </view>
+
+    <!-- 截止时间 -->
+    <view class="form-item">
+      <text class="form-label">截止日期</text>
+      <picker mode="date" value="{{form.deadline}}" start="{{minDate}}" bindchange="onDeadlineChange">
+        <view class="picker-display">
+          <text class="{{form.deadline ? 'picker-val' : 'picker-placeholder'}}">
+            {{form.deadline || '请选择截止日期'}}
+          </text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 布置对象 -->
+    <view class="form-item">
+      <text class="form-label">选择班级</text>
+      <view class="class-select-list">
+        <view
+          class="class-select-item {{selectedClasses[item.class_id] ? 'selected' : ''}}"
+          wx:for="{{classList}}"
+          wx:key="class_id"
+          data-id="{{item.class_id}}"
+          bindtap="onToggleClass"
+        >
+          <text>{{item.class_name}}</text>
+          <text class="class-check">{{selectedClasses[item.class_id] ? '✓' : ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="assign-row">
+        <text class="form-label">布置给所选班级全体学生</text>
+        <switch checked="{{form.assign_all}}" bindchange="onToggleAssignAll" color="#2d3a4a" />
+      </view>
+    </view>
+
+    <!-- 手动选学生（assign_all=false 时显示） -->
+    <view class="form-item" wx:if="{{!form.assign_all}}">
+      <text class="form-label">选择学生</text>
+      <view class="student-select-list">
+        <view
+          class="student-select-item {{selectedStudents[item.student_id] ? 'selected' : ''}}"
+          wx:for="{{filteredStudentList}}"
+          wx:key="student_id"
+          data-id="{{item.student_id}}"
+          bindtap="onToggleStudent"
+        >
+          <text class="ss-name">{{item.name}}</text>
+          <text class="ss-class">{{item.class_name}}</text>
+          <text class="ss-check">{{selectedStudents[item.student_id] ? '✓' : ''}}</text>
+        </view>
+        <view class="empty-state" wx:if="{{filteredStudentList.length === 0}}">
+          <text>所选班级暂无学生</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="submit-wrap">
+    <button
+      class="btn-submit"
+      disabled="{{submitting}}"
+      bindtap="onSubmit"
+    >{{submitting ? '布置中...' : '布置作业'}}</button>
+  </view>
+
+</view>

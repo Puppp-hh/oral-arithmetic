@@ -1,0 +1,91 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading && exam}}">
+
+    <!-- 已提交：成绩页 -->
+    <block wx:if="{{isDone}}">
+      <view class="result-card">
+        <text class="result-title">考试已完成</text>
+        <text class="exam-name">{{exam.title}}</text>
+
+        <block wx:if="{{result}}">
+          <view class="result-score-wrap">
+            <text class="score-num">{{result.score}}</text>
+            <text class="score-total">/ {{result.total_score}}</text>
+          </view>
+          <view class="result-stats">
+            <view class="rs-item">
+              <text class="rs-num correct">{{result.correct_count}}</text>
+              <text class="rs-label">答对</text>
+            </view>
+            <view class="rs-item">
+              <text class="rs-num wrong">{{result.total_count - result.correct_count}}</text>
+              <text class="rs-label">答错</text>
+            </view>
+            <view class="rs-item">
+              <text class="rs-num">{{result.correct_rate}}</text>
+              <text class="rs-label">正确率</text>
+            </view>
+          </view>
+        </block>
+        <block wx:else>
+          <text class="pending-grade">成绩批改中...</text>
+        </block>
+      </view>
+    </block>
+
+    <!-- 考试进行中 -->
+    <block wx:if="{{!isDone && examStarted}}">
+      <!-- 顶部信息栏 -->
+      <view class="exam-header-bar">
+        <view class="exam-info">
+          <text class="exam-title">{{exam.title}}</text>
+          <text class="exam-count">共 {{problems.length}} 题</text>
+        </view>
+        <view class="countdown {{remainSeconds < 300 ? 'danger' : ''}}">
+          <text class="countdown-label">剩余</text>
+          <text class="countdown-time">{{remainText}}</text>
+        </view>
+      </view>
+
+      <!-- 题目列表 -->
+      <view class="problems-wrap">
+        <view
+          class="problem-item"
+          wx:for="{{problems}}"
+          wx:key="problem_id"
+        >
+          <view class="problem-num-badge">{{index + 1}}</view>
+          <view class="problem-body">
+            <text class="problem-content">{{item.problem_content}}</text>
+            <view class="answer-row">
+              <text class="answer-eq">=</text>
+              <input
+                class="answer-input"
+                type="number"
+                placeholder="填写答案"
+                value="{{answers[item.problem_id]}}"
+                data-id="{{item.problem_id}}"
+                bindinput="onAnswerInput"
+                maxlength="10"
+              />
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="submit-wrap">
+        <button
+          class="btn-submit"
+          disabled="{{submitting}}"
+          bindtap="onSubmit"
+        >{{submitting ? '提交中...' : '提交考试'}}</button>
+      </view>
+    </block>
+
+  </block>
+</view>

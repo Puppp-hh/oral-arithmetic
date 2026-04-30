@@ -1,0 +1,82 @@
+<view class="page-container">
+  <view class="mistake-hero">
+    <text class="hero-title">错题本</text>
+    <text class="hero-subtitle">把薄弱题目整理清楚，下一次就更稳。</text>
+  </view>
+
+  <view class="tabs">
+    <view
+      class="tab-item {{activeTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="label"
+      data-tab="{{index}}"
+      bindtap="onTabChange"
+    >
+      <text>{{item.label}}</text>
+      <text class="tab-count">{{item.count}}</text>
+    </view>
+  </view>
+
+  <view class="list-wrap">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="mistake-item"
+        wx:for="{{list}}"
+        wx:key="mistake_id"
+      >
+        <view class="mi-header">
+          <view class="type-tag">{{item.typeLabel}}</view>
+          <text class="wrong-count">{{activeTab === 0 ? '错误' : '累计'}} {{item.wrong_count}} 次</text>
+        </view>
+
+        <view class="mi-problem">
+          <text class="problem-content">{{item.problem_content}}</text>
+        </view>
+
+        <view class="mi-answers">
+          <view class="answer-line">
+            <text class="al-label">我的答案</text>
+            <text class="al-val wrong">{{item.student_answer}}</text>
+          </view>
+          <view class="answer-line">
+            <text class="al-label">正确答案</text>
+            <text class="al-val correct">{{item.standard_answer}}</text>
+          </view>
+        </view>
+
+        <view class="mi-footer">
+          <view class="date-group">
+            <text class="date-text">首次出错：{{item.firstWrongText}}</text>
+            <text class="date-text mastered" wx:if="{{activeTab === 1 && item.correctedText}}">掌握：{{item.correctedText}}</text>
+          </view>
+          <view class="mi-actions" wx:if="{{activeTab === 0}}">
+            <view
+              class="btn-redo"
+              data-problem="{{item.problem_id}}"
+              bindtap="onRedo"
+            >重做</view>
+            <view
+              class="btn-master"
+              data-id="{{item.mistake_id}}"
+              bindtap="onMarkCorrected"
+            >已掌握</view>
+          </view>
+          <view class="mastered-badge" wx:else>已掌握</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="empty-state" wx:if="{{!loading && list.length === 0}}">
+      <text class="empty-title">{{activeTab === 0 ? '当前没有未掌握错题' : '暂无已掌握错题'}}</text>
+      <text class="empty-desc">{{activeTab === 0 ? '保持这个状态，很漂亮。' : '标记掌握后会出现在这里。'}}</text>
+    </view>
+
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!loading && !hasMore && list.length > 0}}">
+      <text>已加载全部</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,110 @@
+.page-container {
+  min-height: 100vh;
+  background: #F4F7FB;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 80rpx;
+}
+
+.card {
+  width: 686rpx;
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 56rpx 40rpx 48rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-icon {
+  width: 100rpx;
+  height: 100rpx;
+  background: #e8f0fe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.icon-text {
+  font-size: 44rpx;
+  color: #1F6FEB;
+  font-weight: bold;
+}
+
+.card-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 12rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.form-item {
+  width: 100%;
+  margin-bottom: 32rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 96rpx;
+  border: 2rpx solid #e8e8e8;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  letter-spacing: 8rpx;
+  color: #1F6FEB;
+  text-align: center;
+  box-sizing: border-box;
+  background: #f5f8ff;
+}
+
+.btn-submit {
+  width: 100%;
+  height: 88rpx;
+  background: #1F6FEB;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  letter-spacing: 4rpx;
+}
+
+.btn-submit[disabled] {
+  background: #a0bfef;
+}
+
+.current-class {
+  display: flex;
+  align-items: center;
+  margin-top: 32rpx;
+}
+
+.current-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.current-name {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}

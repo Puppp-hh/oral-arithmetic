@@ -1,0 +1,58 @@
+<view class="reg-container">
+  <view class="reg-header">
+    <view class="reg-logo">
+      <text class="logo-icon">+</text>
+    </view>
+    <text class="reg-title">学生注册</text>
+    <text class="reg-subtitle">填写邀请码加入班级</text>
+  </view>
+
+  <view class="reg-form">
+
+    <view class="form-item">
+      <text class="form-label">学号</text>
+      <input class="form-input" placeholder="3-50位字母/数字/下划线"
+        value="{{form.account}}" bindinput="onInput" data-field="account"
+        maxlength="50" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input class="form-input" placeholder="至少6位" password
+        value="{{form.password}}" bindinput="onInput" data-field="password"
+        maxlength="30" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">确认密码</text>
+      <input class="form-input" placeholder="再次输入密码" password
+        value="{{form.confirmPassword}}" bindinput="onInput" data-field="confirmPassword"
+        maxlength="30" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">姓名</text>
+      <input class="form-input" placeholder="请输入真实姓名"
+        value="{{form.name}}" bindinput="onInput" data-field="name"
+        maxlength="50" confirm-type="next" />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">邀请码</text>
+      <input class="form-input invite-input" placeholder="请输入老师提供的邀请码"
+        value="{{form.inviteCode}}" bindinput="onInviteInput"
+        maxlength="10" confirm-type="done" bindconfirm="onSubmit" />
+      <text class="form-hint">邀请码由班主任提供</text>
+    </view>
+
+    <button class="btn-submit" disabled="{{loading}}" bindtap="onSubmit">
+      {{loading ? '注册中...' : '立即注册'}}
+    </button>
+
+    <view class="footer-links">
+      <text class="link-text">已有账号？</text>
+      <text class="link-btn" bindtap="goLogin">去登录</text>
+    </view>
+
+  </view>
+</view>

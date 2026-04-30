@@ -12,11 +12,11 @@ export async function getMistakes(req: AuthRequest, res: Response): Promise<void
   const studentId = req.user!.userId;
   const page = Number(req.query.page) || 1;
   const pageSize = Number(req.query.pageSize) || 20;
-  const isCorrectd = req.query.is_corrected !== undefined
-    ? req.query.is_corrected === 'true'
+  const isCorrected = req.query.is_corrected !== undefined
+    ? String(req.query.is_corrected) === 'true'
     : undefined;
   try {
-    const data = await mistakeService.getMistakes(studentId, page, pageSize, isCorrectd);
+    const data = await mistakeService.getMistakes(studentId, page, pageSize, isCorrected);
     success(res, data);
   } catch (e) {
     fail(res, (e as Error).message);

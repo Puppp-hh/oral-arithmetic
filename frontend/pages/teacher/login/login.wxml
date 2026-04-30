@@ -1,0 +1,53 @@
+<view class="login-container">
+  <view class="login-header">
+    <view class="login-logo">
+      <text class="logo-icon">T</text>
+    </view>
+    <text class="login-title">口算训练</text>
+    <text class="login-subtitle">教师端</text>
+  </view>
+
+  <view class="login-form">
+    <view class="form-item">
+      <text class="form-label">工号</text>
+      <input
+        class="form-input"
+        placeholder="请输入工号"
+        value="{{account}}"
+        bindinput="onAccountInput"
+        maxlength="20"
+        confirm-type="next"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">密码</text>
+      <input
+        class="form-input"
+        placeholder="请输入密码"
+        password="{{true}}"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        maxlength="30"
+        confirm-type="done"
+        bindconfirm="onLogin"
+      />
+    </view>
+
+    <button
+      class="btn-login"
+      disabled="{{loading}}"
+      bindtap="onLogin"
+    >{{loading ? '登录中...' : '登 录'}}</button>
+
+    <view class="register-row">
+      <text class="register-text">没有账号？</text>
+      <text class="register-link" bindtap="goRegister">立即注册</text>
+    </view>
+
+    <view class="switch-role">
+      <text class="switch-text">我是学生？</text>
+      <text class="switch-link" bindtap="goStudentLogin">切换到学生端</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,116 @@
+# ──────────────────────────────────────────────────────────────
+# 小学数学口算分级训练系统 - Docker Compose 编排
+#
+# 启动方式：
+#   cp backend/.env.example backend/.env   # 首次使用先复制配置
+#   docker compose up -d                   # 后台启动所有服务
+#   docker compose logs -f app             # 查看应用日志
+#   docker compose down                    # 停止并移除容器（数据卷保留）
+#   docker compose down -v                 # 停止并清除数据卷（慎用）
+#
+# 服务说明：
+#   mysql  → MySQL 8.0，自动执行 backend/sql/schema.sql + backend/sql/seed.sql 初始化
+#   redis  → Redis 7，持久化到 redis-data 卷
+#   app    → Node.js 应用，等待 mysql 和 redis 健康后启动
+# ──────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MySQL 8.0 ───────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: oral_arithmetic_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Root@123456}
+      MYSQL_DATABASE: ${DB_NAME:-oral_arithmetic}
+      MYSQL_USER: ${DB_USER:-root}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Root@123456}
+      # 设置字符集，避免中文乱码
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      # 持久化数据库文件
+      - mysql-data:/var/lib/mysql
+      # 自动初始化：容器首次启动时按文件名顺序执行 /docker-entrypoint-initdb.d/ 下的 .sql
+      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backend/sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-Root@123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - oral_arithmetic_net
+
+  # ── Redis 7 ─────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: oral_arithmetic_redis
+    restart: unless-stopped
+    # appendonly yes：开启 AOF 持久化，重启后数据不丢失
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - oral_arithmetic_net
+
+  # ── Node.js 应用 ─────────────────────────────────────────────
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      # 使用 production 阶段，排除 devDependencies 和源码
+      target: production
+    container_name: oral_arithmetic_app
+    restart: unless-stopped
+    # 从 backend/.env 加载全部环境变量
+    env_file:
+      - ./backend/.env
+    environment:
+      # Docker 内部通过服务名访问其他容器，覆盖 .env 中的 127.0.0.1
+      DB_HOST: mysql
+      REDIS_HOST: redis
+      NODE_ENV: production
+    ports:
+      - "${PORT:-3000}:3000"
+    # 等待 mysql 和 redis 健康检查通过后再启动
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - oral_arithmetic_net
+    # 容器日志限制，防止磁盘占满
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# ── 数据卷（持久化）──────────────────────────────────────────
+volumes:
+  mysql-data:
+    name: oral_arithmetic_mysql_data
+  redis-data:
+    name: oral_arithmetic_redis_data
+
+# ── 网络（隔离，容器间通信）────────────────────────────────────
+networks:
+  oral_arithmetic_net:
+    name: oral_arithmetic_network
+    driver: bridge

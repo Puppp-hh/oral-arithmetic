@@ -1,0 +1,165 @@
+.page-container {
+  min-height: 100vh;
+  background: #F4F7FB;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.search-bar {
+  background: #fff;
+  padding: 18rpx 24rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  box-sizing: border-box;
+}
+
+.search-input {
+  background: #f5f5f5;
+  border-radius: 44rpx;
+  height: 72rpx;
+  padding: 0 28rpx;
+  font-size: 28rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.list-header {
+  padding: 20rpx 32rpx 8rpx;
+}
+
+.list-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.student-list {
+  background: #fff;
+  margin: 16rpx 24rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.student-item {
+  display: flex;
+  align-items: center;
+  padding: 26rpx 24rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.student-item:last-child {
+  border-bottom: none;
+}
+
+.s-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #e8f0fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.s-avatar-text {
+  font-size: 32rpx;
+  color: #1F6FEB;
+  font-weight: bold;
+}
+
+.s-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.s-name-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  min-width: 0;
+}
+
+.s-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+  margin-right: 16rpx;
+  max-width: 240rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.s-account {
+  font-size: 22rpx;
+  color: #999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.s-stats-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.s-level {
+  font-size: 22rpx;
+  color: #666;
+}
+
+.s-rate {
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.s-rate.success { color: #07a65a; }
+.s-rate.primary { color: #1F6FEB; }
+.s-rate.danger  { color: #f5222d; }
+
+.s-arrow {
+  font-size: 24rpx;
+  color: #ccc;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.s-class {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #8c8c8c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300rpx;
+  color: #bbb;
+  font-size: 28rpx;
+}
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 40rpx 0;
+  color: #bbb;
+  font-size: 26rpx;
+}
+
+.no-more {
+  text-align: center;
+  font-size: 24rpx;
+  color: #ccc;
+  padding: 32rpx 0;
+}

@@ -1,0 +1,145 @@
+<view class="train-container">
+
+  <!-- 加载中 -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载题目中...</text>
+  </view>
+
+  <!-- 配置面板 -->
+  <view class="config-panel" wx:if="{{showConfig && !loading && !sessionDone}}">
+    <view class="config-title">训练配置</view>
+
+    <view class="config-row">
+      <text class="config-label">题型</text>
+      <view class="option-list">
+        <view
+          class="option-btn {{config.operation_type === item.value ? 'active' : ''}} {{config.difficulty_level < item.minLevel ? 'disabled' : ''}}"
+          wx:for="{{operationTypes}}"
+          wx:key="value"
+          data-value="{{item.value}}"
+          data-min="{{item.minLevel}}"
+          bindtap="onSelectType"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <view class="config-row">
+      <text class="config-label">难度等级</text>
+      <view class="option-list">
+        <view
+          class="option-btn {{config.difficulty_level === item ? 'active' : ''}}"
+          wx:for="{{difficultyLevels}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="onSelectLevel"
+        >Lv.{{item}}</view>
+      </view>
+    </view>
+
+    <view class="config-row">
+      <text class="config-label">题目数量</text>
+      <input
+        class="count-input"
+        type="number"
+        value="{{config.count}}"
+        bindinput="onCountChange"
+        placeholder="10"
+      />
+    </view>
+
+    <button class="btn-apply" bindtap="applyConfig">开始训练</button>
+  </view>
+
+  <!-- 主训练区 -->
+  <block wx:if="{{!loading && !sessionDone && !showConfig && problems.length > 0}}">
+    <!-- 进度条 -->
+    <view class="progress-wrap">
+      <view class="progress-bar">
+        <view
+          class="progress-fill"
+          style="width: {{progressPercent}}%"
+        ></view>
+      </view>
+      <text class="progress-text">{{currentIndex + 1}} / {{problems.length}}</text>
+    </view>
+
+    <!-- 题目卡片 -->
+    <view class="problem-card">
+      <text class="problem-type-tag">{{currentTypeLabel}}</text>
+      <text class="problem-content">{{currentProblem.problem_content}}</text>
+
+      <!-- 未提交：输入框 -->
+      <block wx:if="{{!submitted}}">
+        <view class="answer-row">
+          <text class="answer-eq">=</text>
+          <input
+            class="answer-input"
+            type="number"
+            placeholder="输入答案"
+            placeholder-class="answer-placeholder"
+            value="{{answer}}"
+            bindinput="onAnswerInput"
+            bindconfirm="onSubmitAnswer"
+            focus="{{true}}"
+            maxlength="10"
+          />
+        </view>
+        <button
+          class="btn-confirm {{submitting ? 'loading' : ''}}"
+          disabled="{{submitting}}"
+          bindtap="onSubmitAnswer"
+        >确定</button>
+      </block>
+
+      <!-- 已提交：显示结果 -->
+      <block wx:else>
+        <view class="result-row">
+          <text class="answer-eq">=</text>
+          <text class="my-answer {{isCorrect ? 'correct' : 'wrong'}}">{{answer}}</text>
+        </view>
+        <view class="feedback-card {{isCorrect ? 'correct-bg' : 'wrong-bg'}}">
+          <text class="feedback-icon">{{isCorrect ? '✓' : '✗'}}</text>
+          <view class="feedback-text">
+            <text class="feedback-title">{{isCorrect ? '回答正确！' : '回答错误'}}</text>
+            <text class="feedback-answer" wx:if="{{!isCorrect}}">正确答案：{{standardAnswer}}</text>
+          </view>
+        </view>
+        <button class="btn-next" bindtap="onNextProblem">
+          {{currentIndex + 1 >= problems.length ? '查看结果' : '下一题'}}
+        </button>
+      </block>
+    </view>
+
+    <!-- 顶部配置按钮 -->
+    <view class="top-bar">
+      <text class="config-toggle" bindtap="toggleConfig">配置</text>
+    </view>
+  </block>
+
+  <!-- 结果面板 -->
+  <view class="summary-card" wx:if="{{sessionDone}}">
+    <text class="summary-title">训练完成</text>
+    <view class="summary-score">
+      <text class="score-num">{{summary.correct_rate}}</text>
+      <text class="score-unit">%</text>
+    </view>
+    <text class="score-label">正确率</text>
+    <view class="summary-detail">
+      <view class="detail-item">
+        <text class="detail-num correct">{{summary.correct_count}}</text>
+        <text class="detail-label">答对</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-num wrong">{{summary.total - summary.correct_count}}</text>
+        <text class="detail-label">答错</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-num">{{summary.total}}</text>
+        <text class="detail-label">共</text>
+      </view>
+    </view>
+    <button class="btn-again" bindtap="onRestartSession">再练一组</button>
+    <button class="btn-back" bindtap="toggleConfig">换配置</button>
+  </view>
+
+</view>

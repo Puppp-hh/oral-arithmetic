@@ -10,7 +10,12 @@
 @PASSWORD = 123456
 
 # test
-GET {{BASE_URL}}/api/health
+GET {{BASE_URL}}/health
+
+
+# 404测试
+GET {{BASE_URL}}/api/abc-not-exist
+
 
 ### ── 1. 学生登录 ─────────────────────────────────────────────
 # 期望：返回 token + studentPublic 用户信息

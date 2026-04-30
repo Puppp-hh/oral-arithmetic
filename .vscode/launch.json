@@ -8,7 +8,9 @@
       "runtimeArgs": ["-r", "ts-node/register"],
       "program": "${workspaceFolder}/backend/src/app.ts",
       "cwd": "${workspaceFolder}/backend",
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "outputCapture": "std"
     }
   ]
 }

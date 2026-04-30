@@ -1,0 +1,244 @@
+.page-container {
+  min-height: 100vh;
+  background: #F4F7FB;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+/* ── 邀请码区 ─────────────────────────────────────────── */
+.invite-section {
+  background: linear-gradient(135deg, #1F6FEB 0%, #3d8ef8 100%);
+  border-radius: 24rpx;
+  padding: 40rpx 36rpx 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.class-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 36rpx;
+  flex-wrap: wrap;
+}
+
+.class-grade-tag {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.2);
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+}
+
+.class-name-text {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.student-count {
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.7);
+  margin-left: auto;
+}
+
+.code-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32rpx;
+}
+
+.code-label-sm {
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 16rpx;
+}
+
+.code-big {
+  font-size: 72rpx;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.code-none {
+  font-size: 32rpx;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16rpx;
+}
+
+.status-badge {
+  font-size: 22rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 20rpx;
+}
+
+.status-badge.active {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+.status-badge.disabled {
+  background: rgba(0,0,0,0.2);
+  color: rgba(255,255,255,0.6);
+}
+
+.code-actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.copy-btn {
+  background: #fff;
+  color: #1F6FEB;
+}
+
+.refresh-btn {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+.btn-icon {
+  font-size: 28rpx;
+}
+
+.share-hint {
+  display: block;
+  font-size: 22rpx;
+  color: rgba(255,255,255,0.65);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── 学生列表 ──────────────────────────────────────────── */
+.students-section {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 0 0 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 32rpx 20rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.section-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.empty-students {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 64rpx 32rpx;
+}
+
+.empty-tip {
+  font-size: 28rpx;
+  color: #aaa;
+  margin-bottom: 12rpx;
+}
+
+.empty-sub {
+  font-size: 22rpx;
+  color: #ccc;
+}
+
+.loading-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #aaa;
+  padding: 40rpx;
+}
+
+.student-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid #f8f8f8;
+}
+
+.student-item:last-child {
+  border-bottom: none;
+}
+
+.student-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: #e8f0fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.avatar-char {
+  font-size: 32rpx;
+  color: #1F6FEB;
+  font-weight: bold;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 6rpx;
+}
+
+.student-account {
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+.student-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6rpx;
+}
+
+.level-badge {
+  font-size: 22rpx;
+  color: #1F6FEB;
+  background: #e8f0fe;
+  padding: 4rpx 12rpx;
+  border-radius: 16rpx;
+}
+
+.rate-text {
+  font-size: 22rpx;
+  color: #07a65a;
+  font-weight: 500;
+}

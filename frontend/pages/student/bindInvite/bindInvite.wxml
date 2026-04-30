@@ -1,0 +1,25 @@
+<view class="page-container">
+  <view class="card">
+    <view class="card-icon">
+      <text class="icon-text">班</text>
+    </view>
+    <text class="card-title">更换班级</text>
+    <text class="card-desc">输入新班级的邀请码即可更换所属班级</text>
+
+    <view class="form-item">
+      <text class="form-label">邀请码</text>
+      <input class="form-input" placeholder="请输入6位邀请码"
+        value="{{inviteCode}}" bindinput="onInput"
+        maxlength="10" confirm-type="done" bindconfirm="onSubmit" />
+    </view>
+
+    <button class="btn-submit" disabled="{{loading}}" bindtap="onSubmit">
+      {{loading ? '绑定中...' : '确认更换'}}
+    </button>
+
+    <view class="current-class" wx:if="{{currentClass}}">
+      <text class="current-label">当前班级：</text>
+      <text class="current-name">{{currentClass}}</text>
+    </view>
+  </view>
+</view>

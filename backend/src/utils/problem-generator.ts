@@ -256,6 +256,134 @@ const generators: Record<number, () => RawProblem> = {
   10: genLevel10,
 };
 
+function genAdditionByLevel(level: number): RawProblem {
+  const max = level <= 2 ? 10 : level <= 4 ? 100 : level <= 7 ? 500 : 1000;
+  const a = rand(1, Math.max(2, max - 1));
+  const b = rand(1, max - a);
+  const ans = a + b;
+  return {
+    problem_content: `${a} + ${b} = ?`,
+    problem_type: 'addition',
+    operation_type: `${max}以内加法`,
+    difficulty_level: level,
+    standard_answer: String(ans),
+    solution_steps: steps(`${a} + ${b}`, ans),
+  };
+}
+
+function genSubtractionByLevel(level: number): RawProblem {
+  const max = level <= 2 ? 10 : level <= 4 ? 100 : level <= 7 ? 500 : 1000;
+  const a = rand(2, max);
+  const b = rand(1, a - 1);
+  const ans = a - b;
+  return {
+    problem_content: `${a} - ${b} = ?`,
+    problem_type: 'subtraction',
+    operation_type: `${max}以内减法`,
+    difficulty_level: level,
+    standard_answer: String(ans),
+    solution_steps: steps(`${a} - ${b}`, ans),
+  };
+}
+
+function genMultiplicationByLevel(level: number): RawProblem {
+  const maxA = level <= 3 ? 5 : level <= 6 ? 9 : 25;
+  const maxB = level <= 3 ? 5 : level <= 6 ? 9 : 25;
+  const a = rand(2, maxA);
+  const b = rand(2, maxB);
+  const ans = a * b;
+  return {
+    problem_content: `${a} × ${b} = ?`,
+    problem_type: 'multiplication',
+    operation_type: level <= 6 ? '表内乘法' : '两位数乘法',
+    difficulty_level: level,
+    standard_answer: String(ans),
+    solution_steps: steps(`${a} × ${b}`, ans),
+  };
+}
+
+function genDivisionByLevel(level: number): RawProblem {
+  const divisorMax = level <= 3 ? 5 : level <= 6 ? 9 : 18;
+  const quotientMax = level <= 3 ? 5 : level <= 6 ? 12 : 30;
+  const b = rand(2, divisorMax);
+  const ans = rand(2, quotientMax);
+  const a = b * ans;
+  return {
+    problem_content: `${a} ÷ ${b} = ?`,
+    problem_type: 'division',
+    operation_type: '整除口算',
+    difficulty_level: level,
+    standard_answer: String(ans),
+    solution_steps: steps(`${a} ÷ ${b}`, ans),
+  };
+}
+
+function genMixedByLevel(level: number): RawProblem {
+  const pick = rand(1, 4);
+  if (pick === 1) {
+    const a = genAdditionByLevel(level);
+    const left = Number(a.standard_answer);
+    const minus = Math.min(left - 1, rand(1, Math.max(1, left - 1)));
+    const ans = left - minus;
+    return {
+      problem_content: `${a.problem_content.replace(' = ?', '')} - ${minus} = ?`,
+      problem_type: 'mixed',
+      operation_type: '加减混合',
+      difficulty_level: level,
+      standard_answer: String(ans),
+      solution_steps: steps(`${a.problem_content.replace(' = ?', '')} - ${minus}`, ans),
+    };
+  }
+  if (pick === 2) {
+    const a = rand(1, level <= 3 ? 20 : 80);
+    const b = rand(2, level <= 3 ? 5 : 12);
+    const c = rand(2, level <= 3 ? 5 : 12);
+    const ans = a + b * c;
+    return {
+      problem_content: `${a} + ${b} × ${c} = ?`,
+      problem_type: 'mixed',
+      operation_type: '先乘除后加减',
+      difficulty_level: level,
+      standard_answer: String(ans),
+      solution_steps: steps(`${a} + ${b} × ${c}`, ans),
+    };
+  }
+  if (pick === 3) {
+    const a = rand(2, level <= 4 ? 9 : 20);
+    const b = rand(2, level <= 4 ? 9 : 20);
+    const c = rand(1, level <= 4 ? 20 : 80);
+    const ans = a * b + c;
+    return {
+      problem_content: `${a} × ${b} + ${c} = ?`,
+      problem_type: 'mixed',
+      operation_type: '乘加混合',
+      difficulty_level: level,
+      standard_answer: String(ans),
+      solution_steps: steps(`${a} × ${b} + ${c}`, ans),
+    };
+  }
+  const a = rand(2, level <= 4 ? 12 : 30);
+  const b = rand(2, level <= 4 ? 12 : 30);
+  const c = rand(2, level <= 4 ? 5 : 9);
+  const ans = (a + b) * c;
+  return {
+    problem_content: `(${a} + ${b}) × ${c} = ?`,
+    problem_type: 'mixed',
+    operation_type: '括号混合',
+    difficulty_level: level,
+    standard_answer: String(ans),
+    solution_steps: steps(`(${a} + ${b}) × ${c}`, ans),
+  };
+}
+
+function generateByOperation(level: number, opType: OperationType): RawProblem {
+  if (opType === 'addition') return genAdditionByLevel(level);
+  if (opType === 'subtraction') return genSubtractionByLevel(level);
+  if (opType === 'multiplication') return genMultiplicationByLevel(level);
+  if (opType === 'division') return genDivisionByLevel(level);
+  return genMixedByLevel(level);
+}
+
 /**
  * 生成 n 道指定难度的题目
  * @param level 难度等级 1-10
@@ -273,10 +401,9 @@ export function generateProblems(
   const seen = new Set<string>();
   let attempts = 0;
 
-  while (results.length < n && attempts < n * 10) {
+  while (results.length < n && attempts < n * 30) {
     attempts++;
-    const p = gen();
-    if (opType && p.problem_type !== opType) continue;
+    const p = opType ? generateByOperation(lv, opType) : gen();
     // 同一次请求内去重（避免完全相同的题目）
     if (seen.has(p.problem_content)) continue;
     seen.add(p.problem_content);

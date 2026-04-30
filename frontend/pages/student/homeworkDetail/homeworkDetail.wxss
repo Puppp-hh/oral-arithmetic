@@ -1,0 +1,217 @@
+.page-container {
+  padding: 24rpx;
+  min-height: 100vh;
+  background: #F4F7FB;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.hw-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #222;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.info-val {
+  font-size: 26rpx;
+  color: #333;
+}
+
+/* 成绩卡 */
+.result-card {
+  text-align: center;
+}
+
+.result-title {
+  font-size: 26rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.result-score {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.score-big {
+  font-size: 96rpx;
+  font-weight: bold;
+  color: #1F6FEB;
+  line-height: 1;
+}
+
+.score-total {
+  font-size: 36rpx;
+  color: #1F6FEB;
+  margin-bottom: 10rpx;
+  margin-left: 4rpx;
+}
+
+.result-detail {
+  display: flex;
+  justify-content: space-around;
+}
+
+.rd-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rd-num {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.rd-num.correct { color: #07a65a; }
+.rd-num.wrong   { color: #f5222d; }
+
+.rd-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+/* 题目 */
+.problem-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 28rpx 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.problem-num {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: #1F6FEB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+
+.num-text {
+  font-size: 24rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.problem-body {
+  flex: 1;
+}
+
+.problem-content {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #222;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.answer-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.answer-eq {
+  font-size: 32rpx;
+  color: #999;
+  margin-right: 16rpx;
+}
+
+.answer-input {
+  width: 160rpx;
+  height: 64rpx;
+  border-bottom: 2rpx solid #1F6FEB;
+  font-size: 32rpx;
+  color: #1F6FEB;
+  font-weight: bold;
+  text-align: center;
+}
+
+.answer-done {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.answer-done.correct { color: #07a65a; }
+.answer-done.wrong   { color: #f5222d; }
+
+.std-answer {
+  font-size: 22rpx;
+  color: #999;
+  margin-left: 16rpx;
+}
+
+/* 提交 */
+.submit-wrap {
+  padding: 24rpx 0 48rpx;
+}
+
+.btn-submit {
+  width: 100%;
+  height: 96rpx;
+  background: #1F6FEB;
+  color: #fff;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  letter-spacing: 4rpx;
+}
+
+.btn-submit[disabled] { background: #a0bfef; }
+
+.tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+}
+
+.tag-warning { background: #fffbe6; color: #fa8c16; }
+.tag-success { background: #e6f7f0; color: #07a65a; }
+
+.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300rpx;
+  color: #bbb;
+  font-size: 28rpx;
+}

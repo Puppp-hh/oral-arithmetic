@@ -1,0 +1,154 @@
+@startuml
+!define SYSTEM_COLOR #F0F7FF
+!define PRIMARY_COLOR #2B6CB0
+!define EXTEND_COLOR #FF6B6B
+!define INCLUDE_COLOR #4ECDC4
+
+left to right direction
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #F8FBFF
+  BorderColor #2B6CB0
+  ArrowColor #2B6CB0
+}
+skinparam actor {
+  BorderColor #2B6CB0
+  BackgroundColor #E8F4F8
+}
+
+actor 学生 as Student
+actor 教师 as Teacher
+
+rectangle 口算小程序系统 {
+
+  ' 认证与登录模块
+  usecase "执行登录认证" as UC00 #FFCCCC
+  usecase "学生登录" as UC01
+  usecase "教师登录" as UC02
+  usecase "学生注册" as UC03
+  usecase "退出登录" as UC10
+  usecase "验证账号密码" as UC00A #FFF0F0
+  usecase "生成认证令牌" as UC00B #FFF0F0
+
+  ' 系统首页
+  usecase "查看首页概览" as UC04
+  usecase "查看个人信息" as UC04A #FFF9E6
+  usecase "查看等级进度" as UC04B #FFF9E6
+
+  ' 题目训练模块
+  usecase "开始训练会话" as UC05
+  usecase "配置训练参数" as UC05A #FFE6FF
+  usecase "选择难度等级" as UC05A1 #FFF0FF
+  usecase "选择题型" as UC05A2 #FFF0FF
+  usecase "设置题目数量" as UC05A3 #FFF0FF
+  usecase "生成训练题目" as UC05B
+  usecase "作答题目" as UC06
+  usecase "计时答题" as UC06A #FFF9E6
+  usecase "提交答案" as UC07
+  usecase "评判答案" as UC07A
+  usecase "显示判题结果" as UC07B #FFF0F0
+  usecase "返回下一题" as UC07C
+  usecase "结束训练会话" as UC08
+  usecase "查看本次汇总" as UC08A
+
+  ' 错题管理模块
+  usecase "管理错题本" as UC09
+  usecase "查看错题本列表" as UC09A #FFE6E6
+  usecase "筛选错题" as UC09B #FFE6E6
+  usecase "按题型筛选" as UC09B1 #FFF0F0
+  usecase "按难度筛选" as UC09B2 #FFF0F0
+  usecase "展开错题详情" as UC09C
+  usecase "标记错题已改正" as UC09D #CCFFCC
+  usecase "删除错题记录" as UC09E
+
+  ' 学习统计模块
+  usecase "查看学习统计" as UC11
+  usecase "查看最近20题统计" as UC11A #E6F3FF
+  usecase "查看每日统计" as UC11B #E6F3FF
+  usecase "查看题型分析" as UC11C #E6F3FF
+  usecase "查看等级分布" as UC11D #E6F3FF
+
+  ' 用例关系定义
+  ' 学生与教师主要流程
+  Student --> UC01
+  Student --> UC03
+  Student --> UC04
+  Student --> UC05
+  Student --> UC09
+  Student --> UC11
+  Student --> UC10
+
+  Teacher --> UC02
+  Teacher --> UC04
+  Teacher --> UC10
+
+  ' 登录流程
+  UC01 --> UC00 : <<include>>
+  UC02 --> UC00 : <<include>>
+  UC00 --> UC00A : <<include>>
+  UC00 --> UC00B : <<include>>
+
+  ' 首页扩展
+  UC04 --> UC04A : <<extend>>
+  UC04 --> UC04B : <<extend>>
+
+  ' 训练流程
+  UC05 --> UC05A : <<include>>
+  UC05A --> UC05A1 : <<extend>>
+  UC05A --> UC05A2 : <<extend>>
+  UC05A --> UC05A3 : <<extend>>
+  UC05 --> UC05B : <<include>>
+  UC05 --> UC06 : <<include>>
+  UC06 --> UC06A : <<extend>>
+  UC06 --> UC07 : <<include>>
+  UC07 --> UC07A : <<include>>
+  UC07A --> UC07B : <<include>>
+  UC07 --> UC07C : <<extend>>
+  UC05 --> UC08 : <<include>>
+  UC08 --> UC08A : <<extend>>
+
+  ' 错题管理流程
+  UC09 --> UC09A : <<include>>
+  UC09A --> UC09B : <<extend>>
+  UC09B --> UC09B1 : <<extend>>
+  UC09B --> UC09B2 : <<extend>>
+  UC09 --> UC09C : <<include>>
+  UC09 --> UC09D : <<extend>>
+  UC09 --> UC09E : <<extend>>
+
+  ' 统计查看流程
+  UC11 --> UC11A : <<extend>>
+  UC11 --> UC11B : <<extend>>
+  UC11 --> UC11C : <<extend>>
+  UC11 --> UC11D : <<extend>>
+}
+
+@enduml
+
+Teacher --> UCAuth
+Teacher --> UC2
+Teacher --> UC12
+Teacher --> UC13
+Teacher --> UC3
+Teacher --> UC10
+
+UC1 --|> UCAuth
+UC2 --|> UCAuth
+
+UC4 --> UC14 : <<include>>
+UC4 --> UC15 : <<include>>
+UC4 --> UC16 : <<include>>
+UC4 --> UC5 : <<include>>
+UC5 --> UC17 : <<include>>
+UC4 --> UC18 : <<extend>>
+
+UC6 --> UC19 : <<include>>
+UC6 --> UC20 : <<include>>
+UC6 --> UC7 : <<extend>>
+UC6 --> UC8 : <<extend>>
+
+UC9 --> UC21 : <<include>>
+UC9 --> UC22 : <<include>>
+UC9 --> UC23 : <<include>>
+
+@enduml

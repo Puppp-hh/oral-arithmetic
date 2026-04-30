@@ -1,0 +1,283 @@
+.home-container {
+  padding: 24rpx;
+  background: #f4f7fb;
+  min-height: 100vh;
+}
+
+/* 老师卡片 */
+.teacher-card {
+  background: #2d3a4a;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.teacher-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.avatar-text {
+  font-size: 40rpx;
+  color: #fff;
+  font-weight: bold;
+}
+
+.teacher-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+}
+
+.teacher-role {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+  margin-top: 6rpx;
+}
+
+.logout-btn {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 8rpx 16rpx;
+}
+
+/* 邀请码卡片 */
+.invite-card {
+  background: linear-gradient(135deg, #1f6feb 0%, #3d8ef8 100%);
+  border-radius: 20rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.invite-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.invite-card-title {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.invite-class-name {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.invite-class-picker {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.invite-class-arrow {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.invite-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.invite-code-text {
+  font-size: 60rpx;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 10rpx;
+}
+
+.invite-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.invite-btn {
+  font-size: 24rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 32rpx;
+}
+
+.copy-btn {
+  background: #fff;
+  color: #1f6feb;
+  font-weight: 600;
+}
+
+.refresh-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.invite-hint {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.invite-empty {
+  background: #fff;
+  border: 2rpx dashed #d0d7de;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx;
+}
+
+.invite-empty-text {
+  font-size: 28rpx;
+  color: #1f6feb;
+}
+
+/* 分区标题 */
+.section-title {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+  margin-top: 8rpx;
+  padding-left: 4rpx;
+}
+
+/* 统计格 */
+.stats-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.stat-cell {
+  width: calc(50% - 8rpx);
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx 24rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.cell-num {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #222;
+}
+
+.cell-num.rate {
+  color: #07a65a;
+}
+
+.cell-label {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+/* 功能列表 */
+.menu-list {
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.menu-icon-wrap.blue {
+  background: #e8f0fe;
+}
+.menu-icon-wrap.teal {
+  background: #e6fffb;
+}
+.menu-icon-wrap.green {
+  background: #e6f7f0;
+}
+.menu-icon-wrap.orange {
+  background: #fff7e6;
+}
+.menu-icon-wrap.purple {
+  background: #f3e8ff;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.menu-icon-wrap.blue .menu-icon {
+  color: #1f6feb;
+}
+.menu-icon-wrap.teal .menu-icon {
+  color: #13c2c2;
+}
+.menu-icon-wrap.green .menu-icon {
+  color: #07a65a;
+}
+.menu-icon-wrap.orange .menu-icon {
+  color: #fa8c16;
+}
+.menu-icon-wrap.purple .menu-icon {
+  color: #722ed1;
+}
+
+.menu-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-label {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #222;
+}
+
+.menu-desc {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}

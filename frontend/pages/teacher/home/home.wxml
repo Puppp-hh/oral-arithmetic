@@ -1,0 +1,115 @@
+<view class="home-container">
+
+  <!-- 老师信息卡 -->
+  <view class="teacher-card">
+    <view class="teacher-info">
+      <view class="avatar">
+        <text class="avatar-text">{{teacherInfo.name ? teacherInfo.name[0] : 'T'}}</text>
+      </view>
+      <view class="teacher-meta">
+        <text class="teacher-name">{{teacherInfo.name || teacherInfo.account}}</text>
+        <text class="teacher-role">教师</text>
+      </view>
+    </view>
+    <text class="logout-btn" bindtap="onLogout">退出</text>
+  </view>
+
+  <!-- 邀请码卡片 -->
+  <view class="invite-card" wx:if="{{inviteInfo}}">
+    <view class="invite-card-top">
+      <text class="invite-card-title">当前班级邀请码</text>
+      <picker mode="selector" range="{{classNames}}" value="{{selectedClassIndex}}" bindchange="onClassPickerChange">
+        <view class="invite-class-picker">
+          <text class="invite-class-name">{{inviteInfo.class_name}}</text>
+          <text class="invite-class-arrow">切换</text>
+        </view>
+      </picker>
+    </view>
+    <view class="invite-code-row">
+      <text class="invite-code-text">{{inviteInfo.invite_code}}</text>
+      <view class="invite-actions">
+        <text class="invite-btn copy-btn" bindtap="onCopyCode">复制</text>
+      </view>
+    </view>
+    <text class="invite-hint">点击班级可切换查看邀请码。学生绑定后不会因邀请码重置而移出班级</text>
+  </view>
+  <view class="invite-card invite-empty" wx:elif="{{inviteLoaded && !inviteInfo}}" bindtap="goCreateClass">
+    <text class="invite-empty-text">+ 创建班级，生成邀请码</text>
+  </view>
+
+  <!-- 班级概况 -->
+  <view class="section-title">班级概况</view>
+  <view class="stats-grid">
+    <view class="stat-cell" bindtap="goStudents">
+      <text class="cell-num">{{classStats.student_count || 0}}</text>
+      <text class="cell-label">学生人数</text>
+    </view>
+    <view class="stat-cell">
+      <text class="cell-num rate">{{classStats.avgRateText || '-'}}</text>
+      <text class="cell-label">平均正确率</text>
+    </view>
+    <view class="stat-cell" bindtap="goHomeworkManage">
+      <text class="cell-num">{{classStats.homework_count || 0}}</text>
+      <text class="cell-label">作业数</text>
+    </view>
+    <view class="stat-cell" bindtap="goExamManage">
+      <text class="cell-num">{{classStats.exam_count || 0}}</text>
+      <text class="cell-label">考试数</text>
+    </view>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="section-title">管理功能</view>
+  <view class="menu-list">
+    <view class="menu-item" bindtap="goClassManage">
+      <view class="menu-icon-wrap teal">
+        <text class="menu-icon">班</text>
+      </view>
+      <view class="menu-text">
+        <text class="menu-label">班级管理</text>
+        <text class="menu-desc">创建班级、管理邀请码</text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="goStudents">
+      <view class="menu-icon-wrap blue">
+        <text class="menu-icon">S</text>
+      </view>
+      <view class="menu-text">
+        <text class="menu-label">学生管理</text>
+        <text class="menu-desc">查看学生信息、学习数据</text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="goHomeworkManage">
+      <view class="menu-icon-wrap green">
+        <text class="menu-icon">作</text>
+      </view>
+      <view class="menu-text">
+        <text class="menu-label">作业管理</text>
+        <text class="menu-desc">布置作业、查看完成情况</text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="goExamManage">
+      <view class="menu-icon-wrap orange">
+        <text class="menu-icon">考</text>
+      </view>
+      <view class="menu-text">
+        <text class="menu-label">考试管理</text>
+        <text class="menu-desc">创建试卷、发布考试</text>
+      </view>
+    </view>
+
+    <view class="menu-item" bindtap="goStats">
+      <view class="menu-icon-wrap purple">
+        <text class="menu-icon">统</text>
+      </view>
+      <view class="menu-text">
+        <text class="menu-label">班级统计</text>
+        <text class="menu-desc">正确率分析、学生排名</text>
+      </view>
+    </view>
+  </view>
+
+</view>

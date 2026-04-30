@@ -1,0 +1,68 @@
+<view class="page-container">
+
+  <!-- 邀请码展示区 -->
+  <view class="invite-section">
+    <view class="class-header">
+      <text class="class-grade-tag">{{codeInfo.grade_name || ''}}</text>
+      <text class="class-name-text">{{codeInfo.class_name || '加载中...'}}</text>
+      <text class="student-count">{{total}} 名学生</text>
+    </view>
+
+    <view class="code-block">
+      <text class="code-label-sm">班级邀请码</text>
+      <text class="code-big" wx:if="{{codeInfo.invite_code}}">
+        {{codeInfo.invite_code}}
+      </text>
+      <text class="code-none" wx:else>暂无邀请码</text>
+      <view class="status-badge {{codeInfo.invite_code_status === 'active' ? 'active' : 'disabled'}}"
+            wx:if="{{codeInfo.invite_code}}">
+        {{codeInfo.invite_code_status === 'active' ? '有效' : '已停用'}}
+      </view>
+    </view>
+
+    <view class="code-actions">
+      <view class="action-btn copy-btn" bindtap="onCopy" wx:if="{{codeInfo.invite_code}}">
+        <text class="btn-icon">📋</text>
+        <text>复制邀请码</text>
+      </view>
+      <view class="action-btn refresh-btn" bindtap="onRefresh">
+        <text class="btn-icon">↻</text>
+        <text>重置邀请码</text>
+      </view>
+    </view>
+
+    <text class="share-hint">每个班级只有一个当前有效邀请码。重置只影响后续加入，已绑定学生不受影响</text>
+  </view>
+
+  <!-- 学生列表 -->
+  <view class="students-section">
+    <view class="section-header">
+      <text class="section-title">班级学生</text>
+      <text class="section-count">共 {{total}} 人</text>
+    </view>
+
+    <view class="empty-students" wx:if="{{!students.length && !loadingStudents}}">
+      <text class="empty-tip">暂无学生</text>
+      <text class="empty-sub">分享邀请码后学生注册即可加入</text>
+    </view>
+
+    <view class="loading-tip" wx:if="{{loadingStudents}}">加载中...</view>
+
+    <view class="student-list" wx:else>
+      <view class="student-item" wx:for="{{students}}" wx:key="student_id">
+        <view class="student-avatar">
+          <text class="avatar-char">{{item.name ? item.name[0] : '?'}}</text>
+        </view>
+        <view class="student-info">
+          <text class="student-name">{{item.name}}</text>
+          <text class="student-account">@{{item.account}}</text>
+        </view>
+        <view class="student-stats">
+          <text class="level-badge">Lv.{{item.current_level}}</text>
+          <text class="rate-text">{{item.cumulative_correct_rate}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>

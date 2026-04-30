@@ -1,0 +1,80 @@
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+const auth = __importStar(require("../../../utils/auth"));
+const student_1 = require("../../../api/student");
+Page({
+    data: {
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+        loading: false,
+    },
+    onLoad() {
+        if (!auth.requireStudent())
+            return;
+    },
+    onInput(e) {
+        const field = e.currentTarget.dataset.field;
+        this.setData({ [field]: e.detail.value });
+    },
+    async onSubmit() {
+        const { oldPassword, newPassword, confirmPassword } = this.data;
+        if (!oldPassword) {
+            wx.showToast({ title: '请输入原密码', icon: 'none' });
+            return;
+        }
+        if (newPassword.length < 6) {
+            wx.showToast({ title: '新密码至少 6 位', icon: 'none' });
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            wx.showToast({ title: '两次新密码不一致', icon: 'none' });
+            return;
+        }
+        this.setData({ loading: true });
+        try {
+            await (0, student_1.resetPassword)({ oldPassword, newPassword });
+            wx.showToast({ title: '密码已重置', icon: 'success' });
+            setTimeout(() => wx.navigateBack(), 1000);
+        }
+        catch {
+            // request.ts 已展示错误
+        }
+        finally {
+            this.setData({ loading: false });
+        }
+    },
+});

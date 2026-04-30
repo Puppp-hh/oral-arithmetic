@@ -1,0 +1,59 @@
+<view class="page-container">
+  <!-- 标签页 -->
+  <view class="tabs">
+    <view
+      class="tab-item {{activeTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}"
+      wx:key="*this"
+      data-tab="{{index}}"
+      bindtap="onTabChange"
+    >{{item}}</view>
+  </view>
+
+  <!-- 列表 -->
+  <view class="list-wrap">
+    <block wx:if="{{list.length > 0}}">
+      <view
+        class="hw-item card"
+        wx:for="{{list}}"
+        wx:key="homework_id"
+        data-id="{{item.homework_id}}"
+        bindtap="goDetail"
+      >
+        <view class="hw-header">
+          <text class="hw-title">{{item.title}}</text>
+          <view class="tag tag-{{item.status === 'pending' ? 'warning' : 'success'}}">
+            {{item.statusLabel}}
+          </view>
+        </view>
+        <view class="hw-meta">
+          <text class="meta-text">题数：{{item.problem_count}} 道</text>
+          <text class="meta-dot">·</text>
+          <text class="meta-text">截止：{{item.deadlineText}}</text>
+        </view>
+        <view class="hw-footer" wx:if="{{item.status === 'submitted'}}">
+          <text class="score-text">得分：{{item.score !== undefined ? item.score : '-'}}</text>
+          <text class="rate-text">正确率：{{item.correct_rate || '-'}}</text>
+        </view>
+      </view>
+    </block>
+
+    <view class="error-state" wx:if="{{!loading && errorMessage}}">
+      <text class="error-title">加载失败</text>
+      <text class="error-desc">{{errorMessage}}</text>
+      <button class="btn-retry" bindtap="onRetry">重新加载</button>
+    </view>
+
+    <view class="empty-state" wx:if="{{!loading && !errorMessage && list.length === 0}}">
+      <text>暂无{{tabs[activeTab]}}的作业</text>
+    </view>
+
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <view class="no-more" wx:if="{{!loading && !hasMore && list.length > 0}}">
+      <text>已加载全部</text>
+    </view>
+  </view>
+</view>

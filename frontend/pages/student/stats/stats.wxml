@@ -1,0 +1,88 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading && overview}}">
+    <!-- 等级卡 -->
+    <view class="level-card">
+      <view class="level-left">
+        <text class="level-num">Lv.{{overview.current_level}}</text>
+        <text class="level-title">{{overview.levelTitle}}</text>
+      </view>
+      <view class="level-right">
+        <text class="level-desc">近20题正确率</text>
+        <text class="level-rate">{{overview.recent_20_correct_rate}}</text>
+      </view>
+    </view>
+
+    <!-- 总体数据 -->
+    <view class="stats-grid">
+      <view class="stat-cell">
+        <text class="cell-num">{{overview.total_problems || 0}}</text>
+        <text class="cell-label">累计题数</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num rate">{{overview.cumulativeRateText}}</text>
+        <text class="cell-label">累计正确率</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num">{{overview.session_count || 0}}</text>
+        <text class="cell-label">练习次数</text>
+      </view>
+      <view class="stat-cell">
+        <text class="cell-num">{{overview.today_problems || 0}}</text>
+        <text class="cell-label">今日题数</text>
+      </view>
+    </view>
+
+    <!-- 近7日趋势 -->
+    <view class="section-card">
+      <text class="section-title">近7日正确率</text>
+      <view class="daily-list">
+        <view
+          class="daily-row"
+          wx:for="{{dailyList}}"
+          wx:key="statistic_date"
+        >
+          <text class="daily-date">{{item.dateText}}</text>
+          <view class="bar-wrap">
+            <view
+              class="bar-fill {{item.rateTone}}"
+              style="width: {{item.barWidth}}"
+            ></view>
+          </view>
+          <text class="daily-rate">{{item.rateText}}</text>
+          <text class="daily-count">({{item.daily_problems}}题)</text>
+        </view>
+
+        <view class="empty-state" wx:if="{{dailyList.length === 0}}">
+          <text>近7日暂无练习记录</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 各题型正确率 -->
+    <view class="section-card" wx:if="{{latestTypeStats}}">
+      <text class="section-title">今日题型分布</text>
+      <view class="type-row">
+        <view class="type-item">
+          <text class="type-rate">{{latestTypeStats.addition_correct_rate}}</text>
+          <text class="type-label">加法</text>
+        </view>
+        <view class="type-item">
+          <text class="type-rate">{{latestTypeStats.subtraction_correct_rate}}</text>
+          <text class="type-label">减法</text>
+        </view>
+        <view class="type-item">
+          <text class="type-rate">{{latestTypeStats.multiplication_correct_rate}}</text>
+          <text class="type-label">乘法</text>
+        </view>
+        <view class="type-item">
+          <text class="type-rate">{{latestTypeStats.division_correct_rate}}</text>
+          <text class="type-label">除法</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

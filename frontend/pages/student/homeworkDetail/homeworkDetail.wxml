@@ -1,0 +1,101 @@
+<view class="page-container">
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:if="{{!loading && homework}}">
+    <!-- 作业信息 -->
+    <view class="info-card card">
+      <text class="hw-title">{{homework.title}}</text>
+      <view class="info-row">
+        <text class="info-label">题数</text>
+        <text class="info-val">{{problems.length}} 道</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">截止时间</text>
+        <text class="info-val">{{homework.deadlineText}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">状态</text>
+        <view class="tag tag-{{isDone ? 'success' : 'warning'}}">
+          {{isDone ? '已提交' : '待完成'}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 已提交：显示成绩 -->
+    <view class="result-card card" wx:if="{{isDone && result}}">
+      <text class="result-title">提交结果</text>
+      <view class="result-score">
+        <text class="score-big">{{result.score}}</text>
+        <text class="score-total">分</text>
+      </view>
+      <view class="result-detail">
+        <view class="rd-item">
+          <text class="rd-num correct">{{result.correct_count}}</text>
+          <text class="rd-label">答对</text>
+        </view>
+        <view class="rd-item">
+          <text class="rd-num wrong">{{result.total - result.correct_count}}</text>
+          <text class="rd-label">答错</text>
+        </view>
+        <view class="rd-item">
+          <text class="rd-num">{{result.correct_rate}}</text>
+          <text class="rd-label">正确率</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 题目列表 -->
+    <view class="problems-wrap">
+      <view
+        class="problem-item card"
+        wx:for="{{problems}}"
+        wx:key="problem_id"
+      >
+        <view class="problem-num">
+          <text class="num-text">{{index + 1}}</text>
+        </view>
+        <view class="problem-body">
+          <text class="problem-content">{{item.problem_content}}</text>
+
+          <!-- 未完成：可输入 -->
+          <view class="answer-wrap" wx:if="{{!isDone}}">
+            <text class="answer-eq">=</text>
+            <input
+              class="answer-input"
+              type="number"
+              placeholder="填写答案"
+              value="{{answers[item.problem_id]}}"
+              data-id="{{item.problem_id}}"
+              bindinput="onAnswerInput"
+              maxlength="10"
+            />
+          </view>
+
+          <!-- 已完成：显示提交的答案及正误 -->
+          <view class="answer-wrap done" wx:else>
+            <text class="answer-eq">=</text>
+            <text
+              class="answer-done {{submission && submission.detail && submission.detail[item.problem_id] && submission.detail[item.problem_id].is_correct ? 'correct' : 'wrong'}}"
+            >
+              {{submission && submission.detail && submission.detail[item.problem_id] ? submission.detail[item.problem_id].answer_content : '-'}}
+            </text>
+            <text class="std-answer" wx:if="{{submission && submission.detail && submission.detail[item.problem_id] && !submission.detail[item.problem_id].is_correct}}">
+              (正确答案: {{item.standard_answer}})
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-wrap" wx:if="{{!isDone}}">
+      <button
+        class="btn-submit"
+        disabled="{{submitting}}"
+        bindtap="onSubmit"
+      >{{submitting ? '提交中...' : '提交作业'}}</button>
+    </view>
+  </block>
+</view>

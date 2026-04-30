@@ -1,0 +1,126 @@
+<view class="page-container">
+
+  <!-- 试卷标题 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">试卷标题</text>
+      <input
+        class="form-input"
+        placeholder="例如：二年级加减法月考试卷"
+        value="{{paperTitle}}"
+        bindinput="onTitleInput"
+        maxlength="60"
+      />
+    </view>
+  </view>
+
+  <!-- 题目组配置 -->
+  <view class="section-header">
+    <text class="section-title">题目组配置</text>
+    <text class="total-info">共 {{totalCount}} 题 / {{totalScore}} 分</text>
+  </view>
+
+  <view
+    class="group-card"
+    wx:for="{{autoConfig.groups}}"
+    wx:key="index"
+  >
+    <view class="group-header">
+      <text class="group-num">第 {{index + 1}} 组</text>
+      <text class="group-remove" data-index="{{index}}" bindtap="removeGroup">删除</text>
+    </view>
+
+    <!-- 题型选择 -->
+    <view class="group-row">
+      <text class="group-label">题型</text>
+      <picker
+        mode="selector"
+        range="{{operationTypes}}"
+        range-key="label"
+        data-index="{{index}}"
+        bindchange="onGroupTypeChange"
+      >
+        <view class="picker-btn">
+          <text>{{item.operation_type}}</text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 难度 -->
+    <view class="group-row">
+      <text class="group-label">难度</text>
+      <input
+        class="num-input"
+        type="number"
+        value="{{item.difficulty_level}}"
+        data-index="{{index}}"
+        data-field="difficulty_level"
+        bindinput="onGroupFieldChange"
+        maxlength="2"
+        placeholder="1"
+      />
+    </view>
+
+    <!-- 题数 -->
+    <view class="group-row">
+      <text class="group-label">题数</text>
+      <input
+        class="num-input"
+        type="number"
+        value="{{item.count}}"
+        data-index="{{index}}"
+        data-field="count"
+        bindinput="onGroupFieldChange"
+        maxlength="2"
+        placeholder="5"
+      />
+    </view>
+
+    <!-- 每题分值 -->
+    <view class="group-row">
+      <text class="group-label">每题分值</text>
+      <input
+        class="num-input"
+        type="number"
+        value="{{item.score_each}}"
+        data-index="{{index}}"
+        data-field="score_each"
+        bindinput="onGroupFieldChange"
+        maxlength="2"
+        placeholder="2"
+      />
+    </view>
+  </view>
+
+  <view class="btn-add-group" bindtap="addGroup">+ 添加题目组</view>
+
+  <!-- 预览区 -->
+  <view class="preview-section" wx:if="{{previewReady}}">
+    <text class="preview-title">试卷预览（共 {{previewProblems.length}} 题）</text>
+    <view
+      class="preview-item"
+      wx:for="{{previewProblems}}"
+      wx:key="problem_id"
+    >
+      <text class="preview-num">{{index + 1}}.</text>
+      <text class="preview-content">{{item.problem_content}}</text>
+      <text class="preview-score">{{item.score}}分</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-row">
+    <button
+      class="btn-preview"
+      disabled="{{previewing}}"
+      bindtap="onPreview"
+    >{{previewing ? '生成中...' : '预览试卷'}}</button>
+
+    <button
+      class="btn-save"
+      disabled="{{saving || !previewReady}}"
+      bindtap="onSavePaper"
+    >{{saving ? '保存中...' : '保存并发布考试'}}</button>
+  </view>
+
+</view>
