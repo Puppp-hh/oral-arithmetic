@@ -141,7 +141,7 @@
       </view>
     </view>
     <button class="btn-again" bindtap="onRestartSession">再练一组</button>
-    <button class="btn-back" bindtap="toggleConfig">换配置</button>
+    <button class="btn-back" bindtap="backToConfig">换配置</button>
   </view>
 
 </view>

@@ -207,6 +207,24 @@ Page({
     toggleConfig() {
         this.setData({ showConfig: !this.data.showConfig });
     },
+    backToConfig() {
+        this.setData({
+            showConfig: true,
+            sessionDone: false,
+            loading: false,
+            problems: [],
+            currentProblem: null,
+            currentTypeLabel: '',
+            progressPercent: 0,
+            currentIndex: 0,
+            answer: '',
+            submitted: false,
+            submitting: false,
+            isCorrect: false,
+            standardAnswer: '',
+            correctCount: 0,
+        });
+    },
     formatProblemType(type) {
         return (0, format_1.formatProblemType)(type);
     },
