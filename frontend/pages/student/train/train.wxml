@@ -38,13 +38,15 @@
 
     <view class="config-row">
       <text class="config-label">题目数量</text>
-      <input
-        class="count-input"
-        type="number"
-        value="{{config.count}}"
-        bindinput="onCountChange"
-        placeholder="10"
-      />
+      <view class="option-list count-options">
+        <view
+          class="option-btn count-option {{config.count === item ? 'active' : ''}}"
+          wx:for="{{countOptions}}"
+          wx:key="*this"
+          data-value="{{item}}"
+          bindtap="onSelectCount"
+        >{{item}}题</view>
+      </view>
     </view>
 
     <button class="btn-apply" bindtap="applyConfig">开始训练</button>

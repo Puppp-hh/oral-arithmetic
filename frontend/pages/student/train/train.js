@@ -71,6 +71,7 @@ Page({
         },
         operationTypes: OPERATION_TYPES,
         difficultyLevels: [1, 2, 3, 4, 5],
+        countOptions: [5, 10, 15, 20, 25, 30],
         sessionId: '',
         correctCount: 0,
     },
@@ -95,9 +96,9 @@ Page({
         }
         this.setData(nextData);
     },
-    onCountChange(e) {
-        const n = Math.min(30, Math.max(1, Number(e.detail.value) || 10));
-        this.setData({ 'config.count': n });
+    onSelectCount(e) {
+        const count = Number(e.currentTarget.dataset.value) || 10;
+        this.setData({ 'config.count': count });
     },
     async applyConfig() {
         this.setData({ loading: true, showConfig: false });

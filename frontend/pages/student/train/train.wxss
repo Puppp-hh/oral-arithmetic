@@ -238,15 +238,13 @@
   opacity: 0.72;
 }
 
-.count-input {
-  width: 160rpx;
-  height: 72rpx;
-  border: 2rpx solid #e5e5ea;
-  border-radius: 16rpx;
-  padding: 0 20rpx;
-  font-size: 30rpx;
+.count-options {
+  gap: 14rpx;
+}
+
+.count-option {
+  min-width: 96rpx;
   text-align: center;
-  box-sizing: border-box;
 }
 
 .btn-apply {
